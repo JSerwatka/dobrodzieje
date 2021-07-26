@@ -1,0 +1,17 @@
+### Django ###
+*.log
+*.pot
+*.pyc
+__pycache__/
+db.sqlite3
+media
+
+# Byte-compiled / optimized / DLL files
+*.py[cod]
+*$py.class
+
+# Translations
+*.mo
+
+# Environment
+env/
