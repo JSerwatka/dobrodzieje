@@ -30,7 +30,7 @@ class Organization(models.Model):
         ('DCh', 'Działalność charytatywna'),
         ('PDzi', 'Pomoc Dzieciom'),
         ('SiR', 'Sport i rekreacja'),
-        ('OŚiPZ', 'Ochorna środowiska i praw zwierząt')
+        ('OSiPZ', 'Ochorna środowiska i praw zwierząt')
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
