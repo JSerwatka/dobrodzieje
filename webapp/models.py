@@ -59,3 +59,24 @@ class Announcement(models.Model):
     #TODO zdjęcia przyszłej strony??
     old_website = models.URLField('previous organization\'s website', blank=True, null=True)
     created_on = models.DateTimeField('created on', auto_now_add=True)
+
+
+class Team(models.Model):
+    pass
+
+
+class TeamMember(models.Model):
+
+    ROLE_CHOICES = [
+        ('FE', 'Front-End Developer'),
+        ('FS', 'Full-Stack Developer'),
+        ('BE', 'Back-End Developer'),
+        ('GD', 'Graphic Designer')
+    ]
+
+    creator = models.ForeignKey(Creator, on_delete=models.CASCADE, related_name='teams')
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="members")
+    role = models.CharField(max_length=2, choices=ROLE_CHOICES)
+    is_admin = models.BooleanField('is admin?', default=False)
+
+
