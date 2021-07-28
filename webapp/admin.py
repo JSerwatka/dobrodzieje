@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User
+from .models import User, Organization, Creator, Announcement, Team, TeamMember
 
 # Register your models here.
 @admin.register(User)
@@ -22,3 +22,23 @@ class UserAdminConfig(UserAdmin):
             'fields': ('email', 'password1', 'password2', 'is_active', 'is_staff')}
         ),
     )
+
+@admin.register(Organization)
+class OrganizationAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Creator)
+class CreatorAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Announcement)
+class AnnouncementAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Team)
+class TeamAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(TeamMember)
+class TeamMemberAdmin(admin.ModelAdmin):
+    pass

@@ -1,8 +1,19 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from .managers import CustomAccountManager
+from django.contrib.postgres.fields import ArrayField
+
+# ===== Choices =====
+# info https://docs.djangoproject.com/en/3.2/ref/models/fields/#enumeration-types
+class Roles(models.TextChoices):
+    FRONTEND = ('FE', 'Front-End Developer')
+    FULLSTACK = ('FS', 'Full-Stack Developer')
+    BACKEND = ('BE', 'Back-End Developer')
+    DESIGNER = ('GD', 'Graphic Designer')
 
 
+
+# ===== Models =====
 class User(AbstractBaseUser,PermissionsMixin):
     objects = CustomAccountManager()
 
@@ -62,21 +73,30 @@ class Announcement(models.Model):
 
 
 class Team(models.Model):
-    pass
+    announcement = models.OneToOneField(Announcement, on_delete=models.CASCADE)
+    is_closed = models.BooleanField('is closed?', default=False)
+    members = models.ManyToManyField(Creator, related_name='teams', through='TeamMember')
+    # info https://docs.djangoproject.com/en/dev/ref/contrib/postgres/fields/#arrayfield
+    looking_for = ArrayField(
+        models.CharField('looking for those roles', max_length=2, choices=Roles.choices),
+        blank=True, 
+        null=True
+    )
+    #TODO chat foreign key
 
 
+# Jak używać many to many https://youtu.be/-HuTlmEVOgU?t=890
 class TeamMember(models.Model):
-
-    ROLE_CHOICES = [
-        ('FE', 'Front-End Developer'),
-        ('FS', 'Full-Stack Developer'),
-        ('BE', 'Back-End Developer'),
-        ('GD', 'Graphic Designer')
-    ]
-
-    creator = models.ForeignKey(Creator, on_delete=models.CASCADE, related_name='teams')
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="members")
-    role = models.CharField(max_length=2, choices=ROLE_CHOICES)
+    creator = models.ForeignKey(Creator, on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    role = models.CharField(max_length=2, choices=Roles.choices)
     is_admin = models.BooleanField('is admin?', default=False)
 
 
+    class Meta:
+        unique_together = ['creator', 'team']
+
+
+#TODO Notifications model
+#TODO Chat model
+#TODO Message model
