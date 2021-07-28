@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from .managers import CustomAccountManager
 from django.contrib.postgres.fields import ArrayField
+from ckeditor.fields import RichTextField
 
 # ===== Choices =====
 # info https://docs.djangoproject.com/en/3.2/ref/models/fields/#enumeration-types
@@ -66,6 +67,7 @@ class Creator(models.Model):
 class Announcement(models.Model):
     organization = models.OneToOneField(Organization, on_delete=models.CASCADE)
     logo = models.ImageField('organization\'s logo', upload_to='logos/', blank=True, null=True)
+    content = RichTextField('what needs to be done', blank=False, null=False)
     #TODO co należy zrobić?
     #TODO zdjęcia przyszłej strony??
     old_website = models.URLField('previous organization\'s website', blank=True, null=True)
