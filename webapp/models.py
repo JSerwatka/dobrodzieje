@@ -35,15 +35,27 @@ class Organization(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     user.is_organization = True
-    name = models.CharField('organization\'s name', max_length=255, unique=True, blank=False, null=False)
-    category = models.CharField(max_length=10, choices=ORGANIZATION_CATEGORY_CHOICES, blank=False, null=False)
+    name = models.CharField('organization\'s name', max_length=255, unique=True)
+    category = models.CharField(max_length=10, choices=ORGANIZATION_CATEGORY_CHOICES)
     phone_number = models.CharField('phone number', max_length=9, blank=True, null=True)
     fb_url = models.URLField('facebook page URL', blank=True, null=True)
     twitter_url = models.URLField('twitter accout URL', blank=True, null=True)
     KRS = models.CharField(max_length=10, blank=True, null=True)
+    #TODO miejscowość
+    #TODO województwo
+
 
 class Creator(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     user.is_creator = True
     first_name = models.CharField('first name', max_length=150, blank=True, null=True)
     last_name = models.CharField('last name', max_length=150, blank=True, null=True)
+
+
+class Announcement(models.Model):
+    organization = models.OneToOneField(Organization, on_delete=models.CASCADE)
+    logo = models.ImageField('organization\'s logo', upload_to='logos/', blank=True, null=True)
+    #TODO co należy zrobić?
+    #TODO zdjęcia przyszłej strony??
+    old_website = models.URLField('previous organization\'s website', blank=True, null=True)
+    created_on = models.DateTimeField('created on', auto_now_add=True)
