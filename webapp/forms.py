@@ -41,7 +41,23 @@ class OrganizationRegisterForm(UserCreationForm):
         organization.twitter_url = self.cleaned_data.get('twitter_url')
         organization.KRS = self.cleaned_data.get('KRS')
         organization.save()
-        return user
+        return 
+        
+    def clean(self):
+        cleaned_data = super().clean()
+
+        fb_url = cleaned_data.get('fb_url')
+        twitter_url = cleaned_data.get('twitter_url')
+
+        if fb_url:
+            if 'facebook.com' not in fb_url:
+                self.add_error('fb_url', 'Podany adres nie należy do Facebook\'a') 
+        
+        if twitter_url:
+            if 'twitter.com' not in twitter_url:
+                self.add_error('twitter_url', 'Podany adres nie należy do Twitter\'a') 
+
+        return cleaned_data
 
 
 class CreatorRegisterForm(UserCreationForm):
