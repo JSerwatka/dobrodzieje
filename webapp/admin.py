@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import User, Organization, Creator, Announcement, Team, TeamMember
 
-# Register your models here.
+
 @admin.register(User)
 class UserAdminConfig(UserAdmin):
     model = User
@@ -23,22 +23,44 @@ class UserAdminConfig(UserAdmin):
         ),
     )
 
+
 @admin.register(Organization)
 class OrganizationAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ('name', 'category')
+    ordering = ('-name',)
+    list_display = ('name', 'category', 'KRS')
+    list_filter = ('category', )
+    
+    fieldsets = (
+        ('Main', {'fields': ('user', 'name', 'KRS', 'category')}),
+        ('Contact', {'fields': ('phone_number', 'fb_url', 'twitter_url')})
+    )
+
 
 @admin.register(Creator)
 class CreatorAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ('first_name', 'last_name')
+    ordering = ('-last_name',)
+    list_display = ('user', 'first_name', 'last_name')
+
 
 @admin.register(Announcement)
 class AnnouncementAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ('organization',)
+    ordering = ('-organization',)
+    list_display = ('organization', 'created_on')
+    list_filter = ('organization', )
+
 
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
-    pass
+    ordering = ('-is_closed',)
+    list_display = ('announcement', 'is_closed')
+    list_filter = ('looking_for', )
+    #TODO https://bradmontgomery.net/blog/django-admin-filters-arrayfields/
+
 
 @admin.register(TeamMember)
 class TeamMemberAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('get_creator_str', 'get_team_str', 'role', 'is_admin')
+    list_filter = ('role', 'is_admin')

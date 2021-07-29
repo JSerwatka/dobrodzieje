@@ -4,6 +4,9 @@ from .managers import CustomAccountManager
 from django.contrib.postgres.fields import ArrayField
 from ckeditor.fields import RichTextField
 
+from django.contrib import admin
+
+
 # ===== Choices =====
 # info https://docs.djangoproject.com/en/3.2/ref/models/fields/#enumeration-types
 class Roles(models.TextChoices):
@@ -56,6 +59,9 @@ class Organization(models.Model):
     #TODO miejscowość
     #TODO województwo
 
+    def __str__(self):
+        return self.name
+
 
 class Creator(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -64,15 +70,21 @@ class Creator(models.Model):
     last_name = models.CharField('last name', max_length=150, blank=True, null=True)
 
 
+    def __str__(self):
+        return f'{self.user}' + \
+               (f' ({self.last_name}, {self.first_name})' if (self.first_name and self.last_name) else '')
+
+
 class Announcement(models.Model):
     organization = models.OneToOneField(Organization, on_delete=models.CASCADE)
     logo = models.ImageField('organization\'s logo', upload_to='logos/', blank=True, null=True)
     content = RichTextField('what needs to be done', blank=False, null=False)
-    #TODO co należy zrobić?
     #TODO zdjęcia przyszłej strony??
     old_website = models.URLField('previous organization\'s website', blank=True, null=True)
     created_on = models.DateTimeField('created on', auto_now_add=True)
 
+    def __str__(self):
+        return f'Announcement by {self.organization}'
 
 class Team(models.Model):
     announcement = models.OneToOneField(Announcement, on_delete=models.CASCADE)
@@ -86,6 +98,9 @@ class Team(models.Model):
     )
     #TODO chat foreign key
 
+    def __str__(self):
+        return f'Team for {self.announcement}'
+
 
 # Jak używać many to many https://youtu.be/-HuTlmEVOgU?t=890
 class TeamMember(models.Model):
@@ -94,6 +109,13 @@ class TeamMember(models.Model):
     role = models.CharField(max_length=2, choices=Roles.choices)
     is_admin = models.BooleanField('is admin?', default=False)
 
+    @admin.display(description='Creator')
+    def get_creator_str(self):
+        return str(self.creator)    
+        
+    @admin.display(description='Team')
+    def get_team_str(self):
+        return str(self.team)
 
     class Meta:
         unique_together = ['creator', 'team']
