@@ -1,7 +1,9 @@
+from django.views.generic.base import RedirectView
 from django.views.generic.edit import CreateView
 from webapp.models import Organization
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.contrib.auth import authenticate, logout, login
 
 from django.views.generic import (
     TemplateView, 
@@ -57,9 +59,32 @@ class RegisterCreator(CreateView):
     form_class = CreatorRegisterForm
     success_url = reverse_lazy('index')
 
+    def form_valid(self, form):
+        valid_form = super().form_valid(form)
+        print(form.cleaned_data)
+        email, password = form.cleaned_data.get('email'), form.cleaned_data.get('password1')
+        new_user = authenticate(email=email, password=password)
+        login(self.request, new_user)
+        return valid_form
+
 
 class RegisterOrganization(CreateView):
     model = User
     template_name = 'webapp/register_organization.html'
     form_class = OrganizationRegisterForm
     success_url = reverse_lazy('index')
+
+    def form_valid(self, form):
+        valid_form = super().form_valid(form)
+        email, password = form.cleaned_data.get('email'), form.cleaned_data.get('password1')
+        new_user = authenticate(email=email, password=password)
+        login(self.request, new_user)
+        return valid_form
+
+
+class Logout(RedirectView):
+    url = reverse_lazy('index')
+
+    def get(self, request, *args, **kwargs):
+        logout(request)
+        return super().get(request, *args, **kwargs)
