@@ -4,6 +4,7 @@ from webapp.models import Organization
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, logout, login
+from django.contrib.auth.views import LoginView
 
 from django.views.generic import (
     TemplateView, 
@@ -45,8 +46,8 @@ class ForOrganizations(TemplateView):
         return context
 
 
-class Login(TemplateView):
-    template_name = 'webapp/index.html'
+class Login(LoginView):
+    template_name = 'webapp/login.html'
 
 
 class Register(TemplateView):
