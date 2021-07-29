@@ -8,15 +8,15 @@
       <div class="collapse navbar-collapse" id="navbarColor01">
         <ul class="navbar-nav me-auto">
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'index'%}">O stronie
+            <a class="nav-link {% if navbar_active == 'index' %}active{% endif %}" href="{% url 'index'%}">O stronie
               <!-- <span class="visually-hidden">(current)</span> -->
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'dla-organizacji'%}">Dla organizacji</a>
+            <a class="nav-link {% if navbar_active == 'for-organizations' %}active{% endif %}" href="{% url 'dla-organizacji'%}">Dla organizacji</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'dla-tworcow'%}">Dla twórców</a>
+            <a class="nav-link {% if navbar_active == 'for-creators' %}active{% endif %}" href="{% url 'dla-tworcow'%}">Dla twórców</a>
           </li>
           <!-- <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
