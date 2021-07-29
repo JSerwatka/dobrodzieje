@@ -8,9 +8,7 @@
       <div class="collapse navbar-collapse" id="navbarColor01">
         <ul class="navbar-nav me-auto">
           <li class="nav-item">
-            <a class="nav-link {% if navbar_active == 'index' %}active{% endif %}" href="{% url 'index'%}">O stronie
-              <!-- <span class="visually-hidden">(current)</span> -->
-            </a>
+            <a class="nav-link {% if navbar_active == 'index' %}active{% endif %}" href="{% url 'index'%}">O stronie</a>
           </li>
           <li class="nav-item">
             <a class="nav-link {% if navbar_active == 'for-organizations' %}active{% endif %}" href="{% url 'dla-organizacji'%}">Dla organizacji</a>
@@ -18,30 +16,36 @@
           <li class="nav-item">
             <a class="nav-link {% if navbar_active == 'for-creators' %}active{% endif %}" href="{% url 'dla-tworcow'%}">Dla twórców</a>
           </li>
-          <!-- <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="#">Action</a>
-              <a class="dropdown-item" href="#">Another action</a>
-              <a class="dropdown-item" href="#">Something else here</a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#">Separated link</a>
-            </div>
-          </li> -->
+
         </ul>
         <ul class="navbar-nav me-end">
+          <li class="nav-item">
+            <a class="nav-link" href="#">Moje ogłoszenia</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Moje Drużyny</a>
+          </li>          
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
+                <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/>
+              </svg>
+            </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="#">Ustawienia Konta</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#">Wyloguj się</a>
+            </div>
+          </li>
           <li class="nav-item">
             <a class="nav-link" href="#">Zaloguj się</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#">Zarejestruj się</a>
           </li>
-          <!-- <li class="nav-item">
-            <a class="nav-link" href="#">Moje ogłoszenia</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Moje Drużyny</a>
-          </li> -->
         </ul>
       </div>
     </div>
