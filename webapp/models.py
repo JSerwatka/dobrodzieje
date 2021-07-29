@@ -87,10 +87,40 @@ class Announcement(models.Model):
         return f'Announcement by {self.organization}'
 
 class Team(models.Model):
+
+    TECHNOLOGIES_CHOICES = [
+        ('PY', 'python'),
+        ('NJS', 'node.js'),
+        ('PHP', 'php'),
+        ('ROR', 'ruby on rails'),
+        ('JSP', 'java'),
+        ('ASX', '.net'),
+        ('GO', 'golang'),
+        ('HC', 'html&css'),
+        ('JS', 'javascript'),
+        ('TS', 'typescript'),
+        ('JSX', 'react'),
+        ('ANG', 'angular'),
+        ('VUE', 'vue.js'),
+        ('CPP', 'c++'),
+        ('C', 'c'),
+        ('RN', 'react native'),
+        ('FL', 'flutter'),
+        ('SC', 'scala'),
+        ('EX', 'elixir'),
+        ('KT', 'kotlin')
+    ]
+
+
     announcement = models.OneToOneField(Announcement, on_delete=models.CASCADE)
     is_closed = models.BooleanField('is closed?', default=False)
     members = models.ManyToManyField(Creator, related_name='teams', through='TeamMember')
     # info https://docs.djangoproject.com/en/dev/ref/contrib/postgres/fields/#arrayfield
+    our_stack = ArrayField(
+        models.CharField('What technologies we use?', max_length=3, choices=TECHNOLOGIES_CHOICES),
+        blank=True, 
+        null=True
+    )
     looking_for = ArrayField(
         models.CharField('looking for those roles', max_length=2, choices=Roles.choices),
         blank=True, 

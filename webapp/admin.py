@@ -56,7 +56,7 @@ class AnnouncementAdmin(admin.ModelAdmin):
 class TeamAdmin(admin.ModelAdmin):
     ordering = ('-is_closed',)
     list_display = ('announcement', 'is_closed')
-    list_filter = ('looking_for', )
+    list_filter = ('looking_for', 'our_stack')
     #TODO https://bradmontgomery.net/blog/django-admin-filters-arrayfields/
 
 
