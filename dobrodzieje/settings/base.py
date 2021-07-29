@@ -28,7 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'webapp',
     'ckeditor',
-    'cripsy_forms'
+    'crispy_forms'
 ]
 
 MIDDLEWARE = [
@@ -106,6 +106,11 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'webapp.User'
+
+# Login/Logout
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'index'
+LOGOUT_REDIRECT_URL = 'index'
 
 # Additional
 CRISPY_TEMPLATE_PACK = 'uni_form'

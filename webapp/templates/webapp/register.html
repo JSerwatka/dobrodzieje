@@ -1,0 +1,10 @@
+{% extends 'webapp/layout.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+Register
+<a href="{% url 'register-creator' %}">Tworca</a>
+<a href="{% url 'register-organization' %}">Organizacja</a>
+
+
+{% endblock %}

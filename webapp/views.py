@@ -1,5 +1,18 @@
+from django.views.generic.edit import CreateView
+from webapp.models import Organization
 from django.shortcuts import render
-from django.views.generic import TemplateView
+from django.urls import reverse_lazy
+
+from django.views.generic import (
+    TemplateView, 
+    FormView
+)
+from .models import User
+from .forms import (
+    OrganizationRegisterForm,
+    CreatorRegisterForm
+)
+
 
 # Create your views here.
 class Index(TemplateView):
@@ -28,3 +41,25 @@ class ForOrganizations(TemplateView):
         context = super().get_context_data(**kwargs)
         context['navbar_active'] = 'for-organizations'
         return context
+
+
+class Login(TemplateView):
+    template_name = 'webapp/index.html'
+
+
+class Register(TemplateView):
+    template_name = 'webapp/register.html'
+
+
+class RegisterCreator(CreateView):
+    model = User
+    template_name = 'webapp/register_creator.html'
+    form_class = CreatorRegisterForm
+    success_url = reverse_lazy('index')
+
+
+class RegisterOrganization(CreateView):
+    model = User
+    template_name = 'webapp/register_organization.html'
+    form_class = OrganizationRegisterForm
+    success_url = reverse_lazy('index')

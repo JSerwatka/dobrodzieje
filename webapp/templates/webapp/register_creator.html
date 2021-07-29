@@ -1,0 +1,12 @@
+{% extends 'webapp/layout.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<form action="{% url 'register-creator' %}" method="POST">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <input type="submit" value="Zarejestruj">
+</form>
+
+{% endblock %}
