@@ -49,7 +49,6 @@ class Organization(models.Model):
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    user.is_organization = True
     name = models.CharField('organization\'s name', max_length=255, unique=True)
     category = models.CharField(max_length=10, choices=ORGANIZATION_CATEGORY_CHOICES)
     phone_number = models.CharField('phone number', max_length=9, blank=True, null=True)
@@ -65,7 +64,6 @@ class Organization(models.Model):
 
 class Creator(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    user.is_creator = True
     first_name = models.CharField('first name', max_length=150, blank=True, null=True)
     last_name = models.CharField('last name', max_length=150, blank=True, null=True)
 

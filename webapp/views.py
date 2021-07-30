@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, logout, login
 from django.contrib.auth.views import LoginView
+from django.contrib import messages
 
 from django.views.generic import (
     TemplateView, 
@@ -62,7 +63,6 @@ class RegisterCreator(CreateView):
 
     def form_valid(self, form):
         valid_form = super().form_valid(form)
-        print(form.cleaned_data)
         email, password = form.cleaned_data.get('email'), form.cleaned_data.get('password1')
         new_user = authenticate(email=email, password=password)
         login(self.request, new_user)

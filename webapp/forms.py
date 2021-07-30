@@ -32,6 +32,7 @@ class OrganizationRegisterForm(UserCreationForm):
     def save(self):
         user = super().save(commit=False)
         user.email = self.cleaned_data.get('email')
+        user.is_organization = True
         user.save()
         organization = Organization(user=user)
         organization.name = self.cleaned_data.get('name')
@@ -41,7 +42,7 @@ class OrganizationRegisterForm(UserCreationForm):
         organization.twitter_url = self.cleaned_data.get('twitter_url')
         organization.KRS = self.cleaned_data.get('KRS')
         organization.save()
-        return 
+        return user
         
     def clean(self):
         cleaned_data = super().clean()
@@ -74,6 +75,7 @@ class CreatorRegisterForm(UserCreationForm):
     def save(self):
         user = super().save(commit=False)
         user.email = self.cleaned_data.get('email')
+        user.is_creator = True
         user.save()
         creator = Creator(user=user)
         creator.first_name = self.cleaned_data.get('first_name')
