@@ -85,12 +85,15 @@ class CreatorRegisterForm(UserCreationForm):
 
 
 class AnnouncementForm(forms.ModelForm):
+    #TODO add organizacja data (as disabled)
     logo = forms.ImageField(required=False, label='Logo organizacji',
                             widget=forms.FileInput(attrs={'aria-label': 'Prześlij logo organizacji'}))
     old_website = forms.URLField(required=False, label='Adres obecnej strony (jeśli istnieje)',
                                  widget=forms.URLInput(attrs={'aria-label': 'Adres obecnej strony (jeśli istnieje)'}))
     content  = forms.CharField(required=True, label='Treść ogłoszenia', 
                                widget=CKEditorWidget(attrs={'aria-label': 'Podaj treść ogłoszenia'}))
+
+    #TODO def clean_content(self): - NO SCRIPTS
 
     class Meta:
         model = Announcement

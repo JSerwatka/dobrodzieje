@@ -77,6 +77,7 @@ class AnnouncementUpdate(UpdateView):
     form_class = AnnouncementForm
 
     def get_object(self):
+        #TODO handle when user doesnt have announcement -> give proper status code
         return Announcement.objects.for_user(self.request.user)
 
     def form_valid(self, form):

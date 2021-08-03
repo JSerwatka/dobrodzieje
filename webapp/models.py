@@ -5,6 +5,7 @@ from django.contrib.postgres.fields import ArrayField
 from ckeditor.fields import RichTextField
 
 from django.contrib import admin
+from django.urls import reverse
 
 
 # ===== Choices =====
@@ -85,6 +86,9 @@ class Announcement(models.Model):
 
     def __str__(self):
         return f'Announcement by {self.organization}'
+
+    def get_absolute_url(self):
+        return reverse('announcement-detail', kwargs={'id': self.id}) 
 
 class Team(models.Model):
 
