@@ -1,20 +1,27 @@
-from django.views.generic.base import RedirectView
-from django.views.generic.edit import CreateView
-from webapp.models import Organization
-from django.shortcuts import render
+# from django.views.generic.base import RedirectView
+# from django.views.generic.detail import DetailView
+# from django.views.generic.edit import CreateView, DeleteView
+from django.contrib.auth.views import LoginView
+# from django.views.generic.base import TemplateView
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, logout, login
-from django.contrib.auth.views import LoginView
 from django.contrib import messages
 
 from django.views.generic import (
-    TemplateView, 
+    TemplateView,
+    RedirectView,
+    DetailView,
+    CreateView, 
+    UpdateView,
+    DeleteView,
     FormView
 )
-from .models import User
+from .models import Announcement, User
 from .forms import (
     OrganizationRegisterForm,
-    CreatorRegisterForm
+    CreatorRegisterForm,
+    AnnouncementForm
 )
 
 
@@ -28,7 +35,49 @@ class Index(TemplateView):
         return context
 
 
+# ==== Announcement ===== 
+class AnnouncementDetails(DetailView):
+    template_name = 'webapp/announcement_detail.html'
+    context_object_name = 'announcement'
 
+    def get_object(self):
+        id = self.kwargs.get('id')
+        return get_object_or_404(Announcement, id=id)
+
+
+class MyAnnouncement(TemplateView):
+    template_name = 'webapp/announcement_empty.html'
+
+    def get(self, request, *args, **kwargs):
+        announcement = Announcement.objects.for_user(request.user)
+        if announcement:
+            return redirect(reverse_lazy('announcement-detail', kwargs={'id': announcement.id}))
+
+        return super().get(request, *args, **kwargs)
+
+
+class AnnouncementCreate(CreateView):
+    template_name = 'webapp/announcement_edit.html'
+    form_class = AnnouncementForm
+
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        return super().form_valid(form)
+
+
+class AnnouncementUpdate(UpdateView):
+    template_name = 'webapp/announcement_edit.html'
+    form_class = AnnouncementForm
+
+    def get_object(self):
+        return Announcement.objects.for_user(self.request.user)
+
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        return super().form_valid(form)
+
+
+# ==== Authentication ===== 
 class ForCreators(TemplateView):
     template_name = 'webapp/for_creators.html'
 
