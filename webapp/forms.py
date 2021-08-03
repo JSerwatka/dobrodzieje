@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from django.forms import widgets
-from .models import User, Organization, Creator
+from ckeditor.widgets import CKEditorWidget
+from .models import Announcement, User, Organization, Creator
 from django.db import transaction
 
 class OrganizationRegisterForm(UserCreationForm):
@@ -82,3 +82,16 @@ class CreatorRegisterForm(UserCreationForm):
         creator.last_name = self.cleaned_data.get('last_name')
         creator.save()
         return user
+
+
+class AnnouncementForm(forms.ModelForm):
+    logo = forms.ImageField(required=False, label='Logo organizacji',
+                            widget=forms.FileInput(attrs={'aria-label': 'Prześlij logo organizacji'}))
+    old_website = forms.URLField(required=False, label='Adres obecnej strony (jeśli istnieje)',
+                                 widget=forms.URLInput(attrs={'aria-label': 'Adres obecnej strony (jeśli istnieje)'}))
+    content  = forms.CharField(required=True, label='Treść ogłoszenia', 
+                               widget=CKEditorWidget(attrs={'aria-label': 'Podaj treść ogłoszenia'}))
+
+    class Meta:
+        model = Announcement
+        fields = ['content', 'logo', 'old_website']
