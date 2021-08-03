@@ -44,6 +44,13 @@ class AnnouncementDetails(DetailView):
         id = self.kwargs.get('id')
         return get_object_or_404(Announcement, id=id)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_author'] = Announcement.objects.is_author(self.request.user)
+        #TODO context['is_team'] -> allow to open group/with organization chat
+        #TODO context['is_creator'] -> join group/create group and contact organization chat buttons
+        return context
+
 
 class MyAnnouncement(TemplateView):
     template_name = 'webapp/announcement_empty.html'

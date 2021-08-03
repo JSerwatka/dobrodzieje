@@ -2,10 +2,14 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="container">
-Detaile announcement
-{{announcement.organization}}
-{{announcement.content|safe}}
-</div>
+    <div class="container">
+        {% if is_author %}
+            <div>
+                <input type="button" class="btn btn-primary" onclick="location.href='{% url "announcement-edit" %}'" value="Edytuj Ogłoszenie">
+            </div>
+        {% endif %}
 
+        {{announcement.organization}}
+        {{announcement.content|safe}}
+    </div>
 {% endblock %}

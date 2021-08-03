@@ -31,3 +31,6 @@ class CustomAccountManager(BaseUserManager):
 class AnnouncementQuerySetManager(models.QuerySet):
     def for_user(self, user):
         return self.get(organization__user__email=user)
+
+    def is_author(self, user):
+        return True if self.filter(organization__user__email=user).first() else False
