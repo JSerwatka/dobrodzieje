@@ -1,4 +1,5 @@
 from django.contrib.auth.models import BaseUserManager
+from django.db import models
 
 class CustomAccountManager(BaseUserManager):
 
@@ -25,3 +26,8 @@ class CustomAccountManager(BaseUserManager):
         user.set_password(password)
         user.save()
         return user
+
+
+class AnnouncementQuerySetManager(models.QuerySet):
+    def for_user(self, user):
+        return self.get(organization__user__email=user)

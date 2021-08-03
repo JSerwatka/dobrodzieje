@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from .managers import CustomAccountManager
+from .managers import CustomAccountManager, AnnouncementQuerySetManager
 from django.contrib.postgres.fields import ArrayField
 from ckeditor.fields import RichTextField
 
@@ -34,8 +34,8 @@ class User(AbstractBaseUser,PermissionsMixin):
     def __str__(self):
         return self.email
 
-class Organization(models.Model):
 
+class Organization(models.Model):
     ORGANIZATION_CATEGORY_CHOICES = [
         ('DP', 'Działalnośc prospołeczna'),
         ('EiW', 'Edukacja i wychowanie'),
@@ -74,6 +74,8 @@ class Creator(models.Model):
 
 
 class Announcement(models.Model):
+    objects = AnnouncementQuerySetManager().as_manager()
+
     organization = models.OneToOneField(Organization, on_delete=models.CASCADE)
     logo = models.ImageField('organization\'s logo', upload_to='logos/', blank=True, null=True)
     content = RichTextField('what needs to be done', blank=False, null=False)
