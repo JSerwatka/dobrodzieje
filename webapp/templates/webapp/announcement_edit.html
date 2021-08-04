@@ -5,6 +5,30 @@
     <div class="container">
     <form method="POST">
         {% csrf_token %}
+        <div class="form-group">
+            <label for="name">Nazwa Organizacji</label>
+            <input type="text" id="name" class="form-control"  value="{{ organization.name }}" disabled>
+        </div>
+        <div class="form-group">
+            <label for="category">Kategoria</label>
+            <input type="text" id="category" class="form-control"  value="{{ organization.get_category_display }}" disabled>
+        </div>
+        <div class="form-group">
+            <label for="phone_number">Numer Telefonu</label>
+            <input type="text" id="phone_number" class="form-control"  value="{{ organization.phone_number }}" disabled>
+        </div>
+        <div class="form-group">
+            <label for="fb_url">Adres strony Facebook</label>
+            <input type="text" id="fb_url" class="form-control"  value="{{ organization.fb_url }}" disabled>
+        </div>
+        <div class="form-group">
+            <label for="twitter_url">Adres konta Twitter</label>
+            <input type="text" id="twitter_url" class="form-control"  value="{{ organization.twitter_url }}" disabled>
+        </div>
+        <div class="form-group">
+            <label for="krs">Number KRS</label>
+            <input type="text" id="krs" class="form-control"  value="{{ organization.KRS }}" disabled>
+        </div>
         {{ form.media }}
         {{ form|crispy }}
         <input type="submit" value="Zapisz">

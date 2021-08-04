@@ -68,7 +68,13 @@ class AnnouncementCreate(CreateView):
 
     def form_valid(self, form):
         form.instance.organization = self.request.user.organization
+        print(form.cleaned_data)
         return super().form_valid(form)
+
+    def get_context_data(self, **kwargs) :
+        context = super().get_context_data(**kwargs)
+        context['organization'] = self.request.user.organization
+        return context
 
 
 class AnnouncementUpdate(UpdateView):
@@ -77,6 +83,11 @@ class AnnouncementUpdate(UpdateView):
 
     def get_object(self):
         return Announcement.objects.for_user_or_400(self.request.user)
+
+    def get_context_data(self, **kwargs) :
+        context = super().get_context_data(**kwargs)
+        context['organization'] = self.request.user.organization
+        return context
 
 
 class AnnouncementDelete(DeleteView):
