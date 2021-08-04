@@ -5,7 +5,8 @@
     <div class="container">
         {% if is_author %}
             <div>
-                <input type="button" class="btn btn-secondary" onclick="location.href='{% url "announcement-edit" %}'" value="Edytuj Ogłoszenie">
+                <a class="btn btn-secondary" href="{% url "announcement-edit" %}">Edytuj Ogłoszenie</a>
+                <a class="btn btn-danger" href="{% url "announcement-delete" %}">Usuń Ogłoszenie</a>
             </div>
         {% endif %}
 

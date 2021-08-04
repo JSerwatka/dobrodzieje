@@ -9,6 +9,7 @@ urlpatterns = [
     path("ogloszenie/<int:id>/", views.AnnouncementDetails.as_view(), name="announcement-detail"),
     path("stworz-ogloszenie/", views.AnnouncementCreate.as_view(), name="announcement-create"),
     path("edytuj-ogłoszenie/", views.AnnouncementUpdate.as_view(), name="announcement-edit"),
+    path("usun-ogłoszenie/", views.AnnouncementDelete.as_view(), name="announcement-delete"),
     path("zaloguj/", views.Login.as_view(), name="login"),
     path("zarejestruj/", views.Register.as_view(), name="register"),
     path("zarejestruj/tworca/", views.RegisterCreator.as_view(), name="register-creator"),

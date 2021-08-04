@@ -7,6 +7,8 @@ from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, logout, login
 from django.contrib import messages
+from django.http import Http404
+
 
 from django.views.generic import (
     TemplateView,
@@ -68,7 +70,7 @@ class AnnouncementCreate(CreateView):
     form_class = AnnouncementForm
 
     def form_valid(self, form):
-        print(form.cleaned_data)
+        form.instance.organization = self.request.user.organization
         return super().form_valid(form)
 
 
@@ -77,12 +79,29 @@ class AnnouncementUpdate(UpdateView):
     form_class = AnnouncementForm
 
     def get_object(self):
-        #TODO handle when user doesnt have announcement -> give proper status code
-        return Announcement.objects.for_user(self.request.user)
+        #TODO give proper status code and move to announcement manager
+        announcement = Announcement.objects.for_user(self.request.user)
+        if announcement is None:
+            raise Http404('No Announcement matches the given query.')
+        
+        return announcement
 
     def form_valid(self, form):
         print(form.cleaned_data)
         return super().form_valid(form)
+
+
+class AnnouncementDelete(DeleteView):
+    template_name = 'webapp/announcemenet_delete.html'
+    success_url = reverse_lazy('index')
+    
+    def get_object(self):
+        #TODO give proper status code and move to announcement manager
+        announcement = Announcement.objects.for_user(self.request.user)
+        if announcement is None:
+            raise Http404('No Announcement matches the given query.')
+        
+        return announcement
 
 
 # ==== Authentication ===== 
