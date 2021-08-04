@@ -90,6 +90,7 @@ class Announcement(models.Model):
     def get_absolute_url(self):
         return reverse('announcement-detail', kwargs={'id': self.id}) 
 
+
 class Team(models.Model):
 
     TECHNOLOGIES_CHOICES = [

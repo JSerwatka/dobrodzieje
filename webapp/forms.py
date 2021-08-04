@@ -95,6 +95,8 @@ class AnnouncementForm(forms.ModelForm):
 
     #TODO def clean_content(self): - NO SCRIPTS
 
+    #TODO override save method to add organization while saving model
+
     class Meta:
         model = Announcement
         fields = ['content', 'logo', 'old_website']
