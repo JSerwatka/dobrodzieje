@@ -98,3 +98,15 @@ class AnnouncementForm(forms.ModelForm):
     class Meta:
         model = Announcement
         fields = ['content', 'logo', 'old_website']
+
+
+class OrganizationEditForm(forms.ModelForm):
+    class Meta:
+        model = Organization
+        fields = ['name', 'category', 'phone_number', 'fb_url', 'twitter_url', 'KRS']
+
+
+class CreatorEditForm(forms.ModelForm):
+    class Meta:
+        model = Creator
+        fields = ['first_name', 'last_name']

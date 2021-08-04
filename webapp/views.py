@@ -16,21 +16,46 @@ from django.views.generic import (
     UpdateView,
     DeleteView
 )
-from .models import Announcement, User
+from .models import (
+    Announcement, 
+    Organization, 
+    User,
+    Creator
+)
+
 from .forms import (
     OrganizationRegisterForm,
     CreatorRegisterForm,
-    AnnouncementForm
+    AnnouncementForm,
+    OrganizationEditForm,
+    CreatorEditForm
 )
 
 
-# Create your views here.
+# ==== Basic ===== 
 class Index(TemplateView):
     template_name = 'webapp/index.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['navbar_active'] = 'index'
+        return context
+
+class ForCreators(TemplateView):
+    template_name = 'webapp/for_creators.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['navbar_active'] = 'for-creators'
+        return context
+
+
+class ForOrganizations(TemplateView):
+    template_name = 'webapp/for_organizations.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['navbar_active'] = 'for-organizations'
         return context
 
 
@@ -98,25 +123,27 @@ class AnnouncementDelete(DeleteView):
         return Announcement.objects.for_user_or_400(self.request.user)
 
 
+# ==== Edit Profile ===== 
+class EditProfile(UpdateView):
+    template_name = 'webapp/edit_profile.html'
+
+    def get_form_class(self):
+        if self.request.user.is_organization:
+            return OrganizationEditForm
+        elif self.request.user.is_creator:
+            return CreatorEditForm
+
+    def get_object(self):
+        if self.request.user.is_organization:
+            return self.request.user.organization
+        elif self.request.user.is_creator:
+            return self.request.user.creator
+
+    def get_success_url(self):
+        return reverse_lazy('index')
+
+
 # ==== Authentication ===== 
-class ForCreators(TemplateView):
-    template_name = 'webapp/for_creators.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['navbar_active'] = 'for-creators'
-        return context
-
-
-class ForOrganizations(TemplateView):
-    template_name = 'webapp/for_organizations.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['navbar_active'] = 'for-organizations'
-        return context
-
-
 class Login(LoginView):
     template_name = 'webapp/login.html'
 
