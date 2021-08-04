@@ -1,14 +1,12 @@
 # from django.views.generic.base import RedirectView
 # from django.views.generic.detail import DetailView
 # from django.views.generic.edit import CreateView, DeleteView
-from django.contrib.auth.views import LoginView
 # from django.views.generic.base import TemplateView
+from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, logout, login
 from django.contrib import messages
-from django.http import Http404
-
 
 from django.views.generic import (
     TemplateView,
@@ -16,8 +14,7 @@ from django.views.generic import (
     DetailView,
     CreateView, 
     UpdateView,
-    DeleteView,
-    FormView
+    DeleteView
 )
 from .models import Announcement, User
 from .forms import (
@@ -79,16 +76,7 @@ class AnnouncementUpdate(UpdateView):
     form_class = AnnouncementForm
 
     def get_object(self):
-        #TODO give proper status code and move to announcement manager
-        announcement = Announcement.objects.for_user(self.request.user)
-        if announcement is None:
-            raise Http404('No Announcement matches the given query.')
-        
-        return announcement
-
-    def form_valid(self, form):
-        print(form.cleaned_data)
-        return super().form_valid(form)
+        return Announcement.objects.for_user_or_400(self.request.user)
 
 
 class AnnouncementDelete(DeleteView):
@@ -96,12 +84,7 @@ class AnnouncementDelete(DeleteView):
     success_url = reverse_lazy('index')
     
     def get_object(self):
-        #TODO give proper status code and move to announcement manager
-        announcement = Announcement.objects.for_user(self.request.user)
-        if announcement is None:
-            raise Http404('No Announcement matches the given query.')
-        
-        return announcement
+        return Announcement.objects.for_user_or_400(self.request.user)
 
 
 # ==== Authentication ===== 
