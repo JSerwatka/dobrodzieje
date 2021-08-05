@@ -51,10 +51,10 @@
           {% endif %}
           {% if not user.is_authenticated %}
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'login' %}">Zaloguj się</a>
+              <a class="nav-link {% if navbar_active == 'login' %}active{% endif %}" href="{% url 'login' %}">Zaloguj się</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'register' %}">Zarejestruj się</a>
+              <a class="nav-link {% if navbar_active == 'register' %}active{% endif %}" href="{% url 'register' %}">Zarejestruj się</a>
             </li>
           {% endif %}
         </ul>

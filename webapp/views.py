@@ -81,7 +81,7 @@ class AnnouncementList(ListView):
         return context
 
     def get_queryset(self):
-        qs = Announcement.objects.select_related('organization')
+        qs = Announcement.objects.select_related('organization').order_by('created_on')
         self.filter_organization = AnnouncementFilter(self.request.GET, queryset=qs)
         return self.filter_organization.qs
 
@@ -178,12 +178,25 @@ class EditProfile(UpdateView):
 class Login(LoginView):
     template_name = 'webapp/login.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['navbar_active'] = 'login'
+        return context
 
-class Register(TemplateView):
+
+# Forces all regsiter views to activate "Zarejestruj się" navbar item
+class RegisterContextMixin():
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['navbar_active'] = 'register'
+        return context
+
+
+class Register(RegisterContextMixin, TemplateView):
     template_name = 'webapp/register.html'
 
 
-class RegisterCreator(CreateView):
+class RegisterCreator(RegisterContextMixin, CreateView):
     model = User
     template_name = 'webapp/register_creator.html'
     form_class = CreatorRegisterForm
@@ -197,7 +210,7 @@ class RegisterCreator(CreateView):
         return valid_form
 
 
-class RegisterOrganization(CreateView):
+class RegisterOrganization(RegisterContextMixin, CreateView):
     model = User
     template_name = 'webapp/register_organization.html'
     form_class = OrganizationRegisterForm
