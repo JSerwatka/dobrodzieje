@@ -68,6 +68,7 @@ class ForOrganizations(TemplateView):
 class AnnouncementList(ListView):
     template_name = 'webapp/announcemenet_list.html'
     context_object_name = 'announcements'
+    paginate_by = 10 
 
     # def dispatch(self, request, *args, **kwargs):
     #     self.filter_organization = None  # Will be set in get_queryset()
