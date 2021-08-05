@@ -21,7 +21,8 @@ from .models import (
     Announcement, 
     Organization, 
     User,
-    Creator
+    Creator,
+    Team
 )
 
 from .forms import (
@@ -84,6 +85,7 @@ class AnnouncementList(ListView):
         qs = Announcement.objects.select_related('organization').order_by('created_on')
         self.filter_organization = AnnouncementFilter(self.request.GET, queryset=qs)
         return self.filter_organization.qs
+
 
 class AnnouncementDetails(DetailView):
     template_name = 'webapp/announcement_detail.html'
@@ -152,6 +154,19 @@ class AnnouncementDelete(DeleteView):
     
     def get_object(self):
         return Announcement.objects.for_user_or_400(self.request.user)
+
+
+# ==== Teams ===== 
+class MyTeams(ListView):
+    template_name = 'webapp/teams_list.html'
+    context_object_name = 'teams'
+    queryset = Team.objects.select_related('announcement').prefetch_related('teammember_set')
+    #TODO paginate_by = 10 
+  
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['navbar_active'] = 'my-teams'
+        return context
 
 
 # ==== Edit Profile ===== 

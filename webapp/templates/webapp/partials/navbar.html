@@ -29,7 +29,7 @@
           {% endif %}          
           {% if user.is_creator %}
             <li class="nav-item">
-              <a class="nav-link" href="#">Moje Drużyny</a>
+              <a class="nav-link" href="{% url 'my-teams'%}">Moje Drużyny</a>
             </li>
           {% endif %}
           {% if user.is_authenticated %}          

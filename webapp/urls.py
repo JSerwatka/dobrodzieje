@@ -11,6 +11,7 @@ urlpatterns = [
     path("stworz-ogloszenie/", views.AnnouncementCreate.as_view(), name="announcement-create"),
     path("edytuj-ogłoszenie/", views.AnnouncementUpdate.as_view(), name="announcement-edit"),
     path("usun-ogłoszenie/", views.AnnouncementDelete.as_view(), name="announcement-delete"),
+    path("moje-druzyny/", views.MyTeams.as_view(), name="my-teams"),
     path("edytuj-profil/", views.EditProfile.as_view(), name="edit-profile"),
     path("zaloguj/", views.Login.as_view(), name="login"),
     path("zarejestruj/", views.Register.as_view(), name="register"),

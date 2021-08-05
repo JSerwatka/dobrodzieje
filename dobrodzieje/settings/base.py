@@ -29,7 +29,7 @@ INSTALLED_APPS = [
     'webapp',
     'ckeditor',
     'crispy_forms',
-    'django_filters',
+    'django_filters'
 ]
 
 MIDDLEWARE = [

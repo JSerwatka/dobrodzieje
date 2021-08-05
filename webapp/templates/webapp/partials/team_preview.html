@@ -1,0 +1,43 @@
+{% load custom_tags %}
+
+{% get_arrayfield_display team arrayfield='our_stack' as our_stack%}
+{% get_arrayfield_display team arrayfield='looking_for' as looking_for%}
+
+<div class="card mb-3 bg-light border-info">
+    <div class="card-body">
+        <h5 class="card-title">{{ team.announcement.organization }}</h5>
+        <p>Zamknięta? - {{ team.is_closed }}</p>
+        <p>
+            Stack 
+            <ul>
+                {% for technology in our_stack %}
+                    <li>{{technology}}</li>
+                {% empty %}
+                    -
+                {% endfor %}
+            </ul>
+        </p>
+        <p>
+            Poszukiwani 
+            <ul>
+                {% for creator in looking_for %}
+                    <li>{{creator}}</li>
+                {% empty %}
+                    -
+                {% endfor %}
+            </ul>
+        </p>
+        <p class="card-text">
+            Drużyna:
+            <ul>
+                {% for team_member in team.teammember_set.all %}
+                    <li>{{ team_member.creator }} - {{ team_member.get_role_display }} 
+
+
+                    </li>
+                {% endfor %}
+            </ul>
+        </p>
+        <a href="" class="btn btn-primary stretched-link">Przejdź do czatu</a>
+    </div>
+</div>

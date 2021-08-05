@@ -3,7 +3,6 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from .managers import CustomAccountManager, AnnouncementQuerySetManager
 from django.contrib.postgres.fields import ArrayField
 from ckeditor.fields import RichTextField
-
 from django.contrib import admin
 from django.urls import reverse
 
