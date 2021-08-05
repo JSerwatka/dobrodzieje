@@ -14,7 +14,8 @@ from django.views.generic import (
     DetailView,
     CreateView, 
     UpdateView,
-    DeleteView
+    DeleteView,
+    ListView
 )
 from .models import (
     Announcement, 
@@ -60,6 +61,16 @@ class ForOrganizations(TemplateView):
 
 
 # ==== Announcement ===== 
+class AnnouncementList(ListView):
+    model = Announcement
+    template_name = 'webapp/announcemenet_list.html'
+    context_object_name = 'announcements'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['navbar_active'] = 'announcement-list'
+        return context
+
 class AnnouncementDetails(DetailView):
     template_name = 'webapp/announcement_detail.html'
     context_object_name = 'announcement'

@@ -1,0 +1,11 @@
+{% extends 'webapp/layout.html' %}
+
+{% block content %}
+    <div class="container">
+        {% for announcement in announcements %}
+            <div>
+              {{announcement}}
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

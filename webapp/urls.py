@@ -5,6 +5,7 @@ urlpatterns = [
     path("", views.Index.as_view(), name="index"),
     path("dla-tworcow/", views.ForCreators.as_view(), name="for-creators"),
     path("dla-organizacji/", views.ForOrganizations.as_view(), name="for-organizations"),
+    path("przegladaj-ogloszenia/", views.AnnouncementList.as_view(), name="announcement-list"),
     path("moje-ogloszenie/", views.MyAnnouncement.as_view(), name="my-announcement"),
     path("ogloszenie/<int:id>/", views.AnnouncementDetails.as_view(), name="announcement-detail"),
     path("stworz-ogloszenie/", views.AnnouncementCreate.as_view(), name="announcement-create"),
