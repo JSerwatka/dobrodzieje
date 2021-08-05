@@ -80,7 +80,6 @@ class AnnouncementList(ListView):
         return context
 
     def get_queryset(self):
-        print(self.request.GET)
         qs = Announcement.objects.select_related('organization')
         self.filter_organization = AnnouncementFilter(self.request.GET, queryset=qs)
         return self.filter_organization.qs
@@ -125,7 +124,6 @@ class AnnouncementCreate(CreateView):
 
     def form_valid(self, form):
         form.instance.organization = self.request.user.organization
-        print(form.cleaned_data)
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs) :
