@@ -1,0 +1,11 @@
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">{{ announcement.organization.name }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{ announcement.created_on }}</h6>
+        <p class="card-text">{{ announcement.content|safe }}</p>
+        <div class="card-footer">
+            {{ announcement.organization.get_category_display }}
+        </div>
+        <a href="{% url 'announcement-detail' id=announcement.id %}" class="btn btn-primary stretched-link">Poznaj szczegóły</a>
+    </div>
+</div>

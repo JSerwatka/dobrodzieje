@@ -1,11 +1,9 @@
 {% extends 'webapp/layout.html' %}
 
 {% block content %}
-    <div class="container">
+    <div class="container mt-3">
         {% for announcement in announcements %}
-            <div>
-              {{announcement}}
-            </div>
+            {% include "webapp/partials/annnouncement_preview.html" with announcement=announcement %}
         {% endfor %}
     </div>
 {% endblock %}
