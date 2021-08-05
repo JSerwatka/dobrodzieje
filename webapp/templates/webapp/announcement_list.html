@@ -1,6 +1,13 @@
 {% extends 'webapp/layout.html' %}
+{% load crispy_forms_tags %}
 
 {% block content %}
+    <div class="container">
+        <form method="GET">
+            {{ filter_organization.form|crispy }}
+            <input type="submit" class="btn btn-primary" value="Filtruj" />
+        </form>
+    </div>
     <div class="container mt-3">
         {% for announcement in announcements %}
             {% include "webapp/partials/annnouncement_preview.html" with announcement=announcement %}

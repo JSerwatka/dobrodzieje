@@ -32,6 +32,10 @@ from .forms import (
     CreatorEditForm
 )
 
+from .filters import (
+    AnnouncementFilter,
+)
+
 
 # ==== Basic ===== 
 class Index(TemplateView):
@@ -64,12 +68,22 @@ class ForOrganizations(TemplateView):
 class AnnouncementList(ListView):
     template_name = 'webapp/announcemenet_list.html'
     context_object_name = 'announcements'
-    queryset = Announcement.objects.select_related('organization')
+
+    # def dispatch(self, request, *args, **kwargs):
+    #     self.filter_organization = None  # Will be set in get_queryset()
+    #     return super().dispatch(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['navbar_active'] = 'announcement-list'
+        context['filter_organization'] = self.filter_organization
         return context
+
+    def get_queryset(self):
+        print(self.request.GET)
+        qs = Announcement.objects.select_related('organization')
+        self.filter_organization = AnnouncementFilter(self.request.GET, queryset=qs)
+        return self.filter_organization.qs
 
 class AnnouncementDetails(DetailView):
     template_name = 'webapp/announcement_detail.html'
