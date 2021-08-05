@@ -24,7 +24,7 @@
         <ul class="navbar-nav me-end">
           {% if user.is_organization %}
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'my-announcement'%}">Moje ogłoszenia</a>
+              <a class="nav-link {% if navbar_active == 'my-announcement' %}active{% endif %}" href="{% url 'my-announcement'%}">Moje ogłoszenia</a>
             </li>
           {% endif %}          
           {% if user.is_creator %}

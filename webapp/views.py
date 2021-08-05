@@ -81,9 +81,11 @@ class AnnouncementDetails(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['is_author'] = Announcement.objects.is_author(self.request.user)
+        is_author = Announcement.objects.is_author(self.request.user)
+        context['is_author'] = is_author
         #TODO context['is_team'] -> allow to open group/with organization chat
         #TODO context['is_creator'] -> join group/create group and contact organization chat buttons
+        context['navbar_active'] = 'my-announcement' if is_author else None
         return context
 
 
@@ -96,6 +98,11 @@ class MyAnnouncement(TemplateView):
             return redirect(reverse_lazy('announcement-detail', kwargs={'id': announcement.id}))
 
         return super().get(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['navbar_active'] = 'my-announcement'
+        return context
 
 
 class AnnouncementCreate(CreateView):
