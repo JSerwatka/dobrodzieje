@@ -62,9 +62,9 @@ class ForOrganizations(TemplateView):
 
 # ==== Announcement ===== 
 class AnnouncementList(ListView):
-    model = Announcement
     template_name = 'webapp/announcemenet_list.html'
     context_object_name = 'announcements'
+    queryset = Announcement.objects.select_related('organization')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
