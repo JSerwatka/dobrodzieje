@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand navbar-dark bg-primary">
     <div class="container-fluid">
-      <a class="navbar-brand" href="{% url 'index'%}">Dobrodzieje</a>
+      <a class="navbar-brand" href="{% url 'webapp:index'%}">Dobrodzieje</a>
       <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button> -->
@@ -8,28 +8,28 @@
       <div class="collapse navbar-collapse" id="navbarColor01">
         <ul class="navbar-nav me-auto">
           <li class="nav-item">
-            <a class="nav-link {% if navbar_active == 'index' %}active{% endif %}" href="{% url 'index'%}">O stronie</a>
+            <a class="nav-link {% if navbar_active == 'index' %}active{% endif %}" href="{% url 'webapp:index'%}">O stronie</a>
           </li>          
           <li class="nav-item">
-            <a class="nav-link {% if navbar_active == 'announcement-list' %}active{% endif %}" href="{% url 'announcement-list'%}">Przeglądaj ogłoszenia</a>
+            <a class="nav-link {% if navbar_active == 'announcement-list' %}active{% endif %}" href="{% url 'webapp:announcement-list'%}">Przeglądaj ogłoszenia</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link {% if navbar_active == 'for-organizations' %}active{% endif %}" href="{% url 'for-organizations'%}">Dla organizacji</a>
+            <a class="nav-link {% if navbar_active == 'for-organizations' %}active{% endif %}" href="{% url 'webapp:for-organizations'%}">Dla organizacji</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link {% if navbar_active == 'for-creators' %}active{% endif %}" href="{% url 'for-creators'%}">Dla twórców</a>
+            <a class="nav-link {% if navbar_active == 'for-creators' %}active{% endif %}" href="{% url 'webapp:for-creators'%}">Dla twórców</a>
           </li>
 
         </ul>
         <ul class="navbar-nav me-end">
           {% if user.is_organization %}
             <li class="nav-item">
-              <a class="nav-link {% if navbar_active == 'my-announcement' %}active{% endif %}" href="{% url 'my-announcement'%}">Moje ogłoszenia</a>
+              <a class="nav-link {% if navbar_active == 'my-announcement' %}active{% endif %}" href="{% url 'webapp:my-announcement'%}">Moje ogłoszenia</a>
             </li>
           {% endif %}          
           {% if user.is_creator %}
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'my-teams'%}">Moje Drużyny</a>
+              <a class="nav-link" href="{% url 'webapp:my-teams'%}">Moje Drużyny</a>
             </li>
           {% endif %}
           {% if user.is_authenticated %}          
@@ -43,18 +43,18 @@
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"></a>
               <div class="dropdown-menu dropdown-menu-end">
-                <a class="dropdown-item" href="{% url 'edit-profile'%}">Ustawienia Konta</a>
+                <a class="dropdown-item" href="{% url 'webapp:edit-profile'%}">Ustawienia Konta</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="{% url 'logout' %}">Wyloguj się</a>
+                <a class="dropdown-item" href="{% url 'webapp:logout' %}">Wyloguj się</a>
               </div>
             </li>
           {% endif %}
           {% if not user.is_authenticated %}
             <li class="nav-item">
-              <a class="nav-link {% if navbar_active == 'login' %}active{% endif %}" href="{% url 'login' %}">Zaloguj się</a>
+              <a class="nav-link {% if navbar_active == 'login' %}active{% endif %}" href="{% url 'webapp:login' %}">Zaloguj się</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link {% if navbar_active == 'register' %}active{% endif %}" href="{% url 'register' %}">Zarejestruj się</a>
+              <a class="nav-link {% if navbar_active == 'register' %}active{% endif %}" href="{% url 'webapp:register' %}">Zarejestruj się</a>
             </li>
           {% endif %}
         </ul>

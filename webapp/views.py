@@ -111,7 +111,7 @@ class MyAnnouncement(TemplateView):
     def get(self, request, *args, **kwargs):
         announcement = Announcement.objects.for_user(request.user)
         if announcement:
-            return redirect(reverse_lazy('announcement-detail', kwargs={'id': announcement.id}))
+            return redirect(reverse_lazy('webapp:announcement-detail', kwargs={'id': announcement.id}))
 
         return super().get(request, *args, **kwargs)
     
@@ -150,7 +150,7 @@ class AnnouncementUpdate(UpdateView):
 
 class AnnouncementDelete(DeleteView):
     template_name = 'webapp/announcemenet_delete.html'
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('webapp:index')
     
     def get_object(self):
         return Announcement.objects.for_user_or_400(self.request.user)
@@ -186,7 +186,7 @@ class EditProfile(UpdateView):
             return self.request.user.creator
 
     def get_success_url(self):
-        return reverse_lazy('index')
+        return reverse_lazy('webapp:index')
 
 
 # ==== Authentication ===== 
@@ -215,7 +215,7 @@ class RegisterCreator(RegisterContextMixin, CreateView):
     model = User
     template_name = 'webapp/register_creator.html'
     form_class = CreatorRegisterForm
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('webapp:index')
 
     def form_valid(self, form):
         valid_form = super().form_valid(form)
@@ -229,7 +229,7 @@ class RegisterOrganization(RegisterContextMixin, CreateView):
     model = User
     template_name = 'webapp/register_organization.html'
     form_class = OrganizationRegisterForm
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('webapp:index')
 
     def form_valid(self, form):
         valid_form = super().form_valid(form)
@@ -240,7 +240,7 @@ class RegisterOrganization(RegisterContextMixin, CreateView):
 
 
 class Logout(RedirectView):
-    url = reverse_lazy('index')
+    url = reverse_lazy('webapp:index')
 
     def get(self, request, *args, **kwargs):
         logout(request)

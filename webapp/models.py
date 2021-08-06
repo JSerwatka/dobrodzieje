@@ -87,7 +87,7 @@ class Announcement(models.Model):
         return f'Announcement by {self.organization}'
 
     def get_absolute_url(self):
-        return reverse('announcement-detail', kwargs={'id': self.id}) 
+        return reverse('webapp:announcement-detail', kwargs={'id': self.id}) 
 
 
 class Team(models.Model):

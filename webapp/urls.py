@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 
+app_name = 'webapp'
 urlpatterns = [
     path("", views.Index.as_view(), name="index"),
     path("dla-tworcow/", views.ForCreators.as_view(), name="for-creators"),

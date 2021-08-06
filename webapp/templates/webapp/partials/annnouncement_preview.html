@@ -6,6 +6,6 @@
         <div class="card-footer">
             {{ announcement.organization.get_category_display }}
         </div>
-        <a href="{% url 'announcement-detail' id=announcement.id %}" class="btn btn-primary stretched-link">Poznaj szczegóły</a>
+        <a href="{% url 'webapp:announcement-detail' id=announcement.id %}" class="btn btn-primary stretched-link">Poznaj szczegóły</a>
     </div>
 </div>

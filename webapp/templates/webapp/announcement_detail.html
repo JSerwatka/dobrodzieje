@@ -1,12 +1,12 @@
-{% extends 'webapp/layout.html' %}
+{% extends 'layout.html' %}
 {% load crispy_forms_tags %}
 
 {% block content %}
     <div class="container">
         {% if is_author %}
             <div>
-                <a class="btn btn-secondary" href="{% url "announcement-edit" %}">Edytuj Ogłoszenie</a>
-                <a class="btn btn-danger" href="{% url "announcement-delete" %}">Usuń Ogłoszenie</a>
+                <a class="btn btn-secondary" href="{% url "webapp:announcement-edit" %}">Edytuj Ogłoszenie</a>
+                <a class="btn btn-danger" href="{% url "webapp:announcement-delete" %}">Usuń Ogłoszenie</a>
             </div>
         {% endif %}
 

@@ -1,9 +1,9 @@
-{% extends 'webapp/layout.html' %}
+{% extends 'layout.html' %}
 {% load crispy_forms_tags %}
 
 {% block content %}
 <div class="container">
-    <form action="{% url 'login' %}" method="POST">
+    <form action="{% url 'webapp:login' %}" method="POST">
         {% csrf_token %}
         {{ form|crispy }}
         <button type="submit" class="btn btn-primary mt-3">Zaloguj się</button>
