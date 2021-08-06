@@ -29,7 +29,9 @@ INSTALLED_APPS = [
     'webapp',
     'ckeditor',
     'crispy_forms',
-    'django_filters'
+    'django_filters',
+    'channels',
+    'chat'
 ]
 
 MIDDLEWARE = [
@@ -125,3 +127,6 @@ CKEDITOR_CONFIGS = {
         ]
     }
 }
+
+# Chat
+ASGI_APPLICATION = 'dobrodzieje.routing.application'

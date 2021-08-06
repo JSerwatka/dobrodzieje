@@ -22,6 +22,7 @@ app_name = "webapp"
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('chat/', include('chat.urls')),
     path('', include('webapp.urls'))
 ]
 
