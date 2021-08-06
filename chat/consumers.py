@@ -1,8 +1,9 @@
 import json
-from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
-class ChatRoomConsumer(AsyncWebsocketConsumer):
+class ChatRoomConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
+        self.user = self.scope['user']
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = f'chat_{self.room_name}'
         
@@ -21,26 +22,20 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
         )
 
     # Receive from websocket
-    async def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        message = text_data_json['message']
-        username = text_data_json['username']
-
+    async def receive_json(self, text_data):
         # Send to room group
         await self.channel_layer.group_send(
             self.room_group_name,
             {
                 'type': 'chatroom_message',
-                'message': message,
-                'username': username
+                'message': text_data['message'],
+                'username': text_data['username']
             }
         )
     
     # Receive message from room group
     async def chatroom_message(self, event):
-        message = event['message']
-        username = event['username']
-        await self.send(text_data=json.dumps({
-            'message': message,
-            'username': username
-        }))
+        await self.send_json(content={
+            'message': event['message'],
+            'username': event['username']
+        })
