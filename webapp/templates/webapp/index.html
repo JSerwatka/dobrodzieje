@@ -1,6 +1,14 @@
 {% extends 'layout.html' %}
 
 {% block content %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {{ message.extra_tags }}" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
 Home page
 {{user}}
 {% endblock %}
