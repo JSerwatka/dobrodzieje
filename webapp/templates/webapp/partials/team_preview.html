@@ -38,6 +38,6 @@
                 {% endfor %}
             </ul>
         </p>
-        <a href="" class="btn btn-primary stretched-link">Przejdź do czatu</a>
+        <a href="{% url 'chat:team_chat' team_id=team.id %}" class="btn btn-primary stretched-link">Przejdź do czatu</a>
     </div>
 </div>

@@ -20,7 +20,7 @@
     </div>
 
 
-    {{ room_name|json_script:"room-name" }}
+    {{ team_id|json_script:"team-id" }}
     {{ request.user.email|json_script:"user-username" }}
     <script>
         document.querySelector('#submit').onclick = function (e) {
@@ -34,11 +34,13 @@
             messageInputDom.value = '';
         };
 
-        const roomName = JSON.parse(document.getElementById('room-name').textContent);
+        const roomName = JSON.parse(document.getElementById('team-id').textContent);
         const chatSocket = new WebSocket(
             'ws://' +
             window.location.host +
-            '/ws/chat'
+            '/ws/' +
+            roomName +
+            '/'
         );
 
         // Receive from websocket
