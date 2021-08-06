@@ -33,7 +33,7 @@
 
 
     {{ room_name|json_script:"room-name" }}
-    {{ request.user.username|json_script:"user-username" }}
+    {{ request.user.email|json_script:"user-username" }}
     <script>
         document.querySelector('#submit').onclick = function (e) {
             const messageInputDom = document.querySelector('#input');
