@@ -3,8 +3,8 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 class ChatRoomConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
-        self.user = self.scope['user']
-        print(self.scope['url_route']['kwargs'])
+        # self.user = self.scope['user']
+        # print(self.scope['url_route']['kwargs'])
         self.team_id = self.scope['url_route']['kwargs']['team_id']
         self.room_group_name = f'chat_team_{self.team_id}'
         

@@ -130,7 +130,7 @@ class Team(models.Model):
         blank=True, 
         null=True
     )
-    #TODO chat foreign key
+    #TODO chat foreign key (potrzebny?)
 
     def __str__(self):
         return f'Team for {self.announcement}'
@@ -142,6 +142,7 @@ class TeamMember(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     role = models.CharField(max_length=2, choices=Roles.choices)
     is_admin = models.BooleanField('is admin?', default=False)
+    #TODO nick/alias (for single chat)
 
     @admin.display(description='Creator')
     def get_creator_str(self):
@@ -156,5 +157,3 @@ class TeamMember(models.Model):
 
 
 #TODO Notifications model
-#TODO Chat model
-#TODO Message model
