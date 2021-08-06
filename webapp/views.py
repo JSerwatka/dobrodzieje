@@ -160,7 +160,6 @@ class AnnouncementDelete(DeleteView):
 class MyTeams(ListView):
     template_name = 'webapp/teams_list.html'
     context_object_name = 'teams'
-    queryset = Team.objects.select_related('announcement').prefetch_related('teammember_set')
     #TODO paginate_by = 10 
   
     def get_context_data(self, **kwargs):
@@ -168,6 +167,8 @@ class MyTeams(ListView):
         context['navbar_active'] = 'my-teams'
         return context
 
+    def get_queryset(self):
+        return Team.objects.filter(members__user=self.request.user).select_related('announcement').prefetch_related('teammember_set')
 
 # ==== Edit Profile ===== 
 class EditProfile(UpdateView):
