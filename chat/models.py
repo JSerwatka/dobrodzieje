@@ -2,7 +2,6 @@ from django.db import models
 from webapp.models import Team, User
 
 # Create your models here.
-#TODO Message 
 class Message(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     sender = models.ForeignKey(User, on_delete=models.CASCADE)
