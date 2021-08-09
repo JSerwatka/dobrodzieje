@@ -36,7 +36,7 @@
             const messageInputDom = document.querySelector('#input');
             const message = messageInputDom.value;
             // Send to websocket
-            chatSocket.send(JSON.stringify({
+            socket.send(JSON.stringify({
                 'message': message,
                 'username': JSON.parse(document.getElementById('user-username').textContent)
             }));
@@ -44,18 +44,31 @@
         };
 
         const roomName = JSON.parse(document.getElementById('team-id').textContent);
-        const chatSocket = new WebSocket(
-            'ws://' +
-            window.location.host +
-            '/ws/' +
-            roomName +
-            '/'
-        );
+        
+        // Configure WebSocket
+        const loc = window.location;
+        let wsStart = (loc.protocol === 'https:') ? 'wss://' : 'ws://'
+
+        const endpoint = wsStart + loc.host + loc.pathname + '/'
+        const socket = new WebSocket(endpoint);
 
         // Receive from websocket
-        chatSocket.onmessage = function (e) {
+        socket.onmessage = function (e) {
+            console.log('message', e)
             const data = JSON.parse(e.data);
             document.querySelector('#chat-text').value += (data.username + ': ' + data.message + '\n')
         }
+
+        socket.onopen = function (e) {
+            console.log('open', e)
+        }
+        socket.onclose = function (e) {
+            console.log('close', e)
+        }
+        socket.onerror = function (e) {
+            console.log('error', e)
+        }
+
+        
     </script>
 {% endblock content %}
