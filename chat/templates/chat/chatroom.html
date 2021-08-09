@@ -17,7 +17,14 @@
                 <form>
                     <div class="form-group">
                         <label for="exampleFormControlTextarea1" class="h4 pt-5">Chatroom dla {{ organization }}</label>
-                        <textarea class="form-control" id="chat-text" rows="10"></textarea><br>
+                        <div class="form-control">
+                            <ul id="message-list">
+                                {% for message in messages %}
+                                    <li>{{ message.sender }}: {{ message.content }}</li>
+                                {% endfor %}
+                            </ul>
+
+                        </div><br>
                     </div>
                     <div class="form-group">
                         <input class="form-control" id="input" type="text"></br>
@@ -32,7 +39,16 @@
     {{ team_id|json_script:"team-id" }}
     {{ request.user.email|json_script:"user-username" }}
     <script>
-        document.querySelector('#submit').onclick = function (e) {
+        function appendNewMsg(rawData) {
+            const messageList = document.querySelector('#message-list');
+            const data = JSON.parse(rawData);
+            const newMsg = `<li>${data.username}: ${data.message}</li>`;
+
+            messageList.innerHTML += newMsg;
+
+        }
+
+        function sendMsg(event){
             const messageInputDom = document.querySelector('#input');
             const message = messageInputDom.value;
             // Send to websocket
@@ -41,33 +57,43 @@
                 'username': JSON.parse(document.getElementById('user-username').textContent)
             }));
             messageInputDom.value = '';
-        };
+        }
 
-        const roomName = JSON.parse(document.getElementById('team-id').textContent);
+        function configureWebSocket(){
+            // Configure new WebSocket
+            const loc = window.location;
+            let wsStart = (loc.protocol === 'https:') ? 'wss://' : 'ws://'
+            const endpoint = wsStart + loc.host + loc.pathname + '/'
+
+            const socket = new WebSocket(endpoint);
+
+            // Configure events
+            // Receive from websocket
+            socket.onmessage = function (e) {
+                console.log('message', e)
+                appendNewMsg(e.data);
+            }
+
+            socket.onopen = function (e) {
+                console.log('open', e)
+                //#TODO make user icon online when connection opened
+            }
+            socket.onclose = function (e) {
+                console.log('close', e)
+                //#TODO make user icon offline when connection closed
+            }
+            socket.onerror = function (e) {
+                console.log('error', e)
+            }
+
+            return socket
+
+        }
+
+        const socket = configureWebSocket();
+        document.querySelector('#submit').onclick = sendMsg;
         
-        // Configure WebSocket
-        const loc = window.location;
-        let wsStart = (loc.protocol === 'https:') ? 'wss://' : 'ws://'
 
-        const endpoint = wsStart + loc.host + loc.pathname + '/'
-        const socket = new WebSocket(endpoint);
-
-        // Receive from websocket
-        socket.onmessage = function (e) {
-            console.log('message', e)
-            const data = JSON.parse(e.data);
-            document.querySelector('#chat-text').value += (data.username + ': ' + data.message + '\n')
-        }
-
-        socket.onopen = function (e) {
-            console.log('open', e)
-        }
-        socket.onclose = function (e) {
-            console.log('close', e)
-        }
-        socket.onerror = function (e) {
-            console.log('error', e)
-        }
 
         
     </script>
