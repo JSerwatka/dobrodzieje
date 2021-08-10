@@ -9,4 +9,4 @@ class Message(models.Model):
     created_on = models.DateTimeField('created on', auto_now_add=True)
 
     class Meta:
-        ordering = ('created_on',)
+        ordering = ('-created_on',)
