@@ -32,7 +32,7 @@ def team_chat(request, team_id):
     
     members = team.teammember_set.all()
     organization = team.announcement.organization
-    messages = Message.objects.filter(team_id=team_id)
+    # messages = Message.objects.filter(team_id=team_id)
     #TODO settings - delete group, open/close, add looking_for, add stack
 
     return render(request, 'chat/chatroom.html', {
@@ -40,12 +40,12 @@ def team_chat(request, team_id):
         'team': team,
         'members': members,
         'organization': organization,
-        'messages': messages
+        # 'messages': messages
     })
 
 #TODO add auhtontication test method
 class LoadMessages(ListView):
-    paginate_by = 10
+    paginate_by = 25
     
     def get_queryset(self):
         team_id = self.kwargs.get('team_id')

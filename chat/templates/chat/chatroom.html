@@ -12,9 +12,6 @@
                 <div class="h4">Chatroom dla {{ organization }}</div>
                 <div class="form-control chat-window">
                     <ul id="message-list">
-                        {% for message in messages %}
-                            <li>{{ message.sender }}: {{ message.content }}</li>
-                        {% endfor %}
                     </ul>
                 </div>
                 <input class="form-control" id="input" type="text"></br>
@@ -43,7 +40,7 @@
             //#TODO set postion ass li clas
             const position = (data.username === currentUser) ? 'right' : 'left'
             const newMsg = document.createElement("li");
-            newMsg.innerHTML = `<li>${data.sender}: ${data.content}</li>`;
+            newMsg.innerHTML = `<li>${data.sender}: ${data.content} ${data.created_on}</li>`;
 
             // When loading msgs from db add to the start of the chat
             // otherwise (websocket msgs) ass to the end of the chat
@@ -84,6 +81,7 @@
             socket.onopen = function (e) {
                 console.log('open', e)
                 //#TODO make user icon online when connection opened
+                loadMessages()
             }
             socket.onclose = function (e) {
                 console.log('close', e)
@@ -106,37 +104,44 @@
                         }
                         throw new Error('Fetching messages failed!');
                     })
-                    .then(data => {
+                    .then(msgPage => {
                         // If all msgs loaded - disable load msgs functionality
-                        if (msgPageToLoad >= data.numPages) {
+                        if (msgPageToLoad >= msgPage.numPages) {
                             console.info('All messages loaded')
-                            chatWindow.removeEventListener('scroll', loadMoreMessages)
+                            chatWindow.removeEventListener('scroll', handleScrollMsgs)
                         }
                         else {
                             msgPageToLoad++;
                         }
-                        return data;
+                        return msgPage;
                     })
                     .catch(err => console.log(err))
         }
 
-        // When users scrolls to the top of the chat window load more msgs
-        function loadMoreMessages(){        
-            if (this.scrollTop < 30 && !loadingMsgsFlag) {
-                loadingMsgsFlag = true;
-                fetchMessages()
-                .then(data => {
-                    console.log(data)
-                    loadingMsgsFlag = false;
+        // Loads single page of msgs and inserts them to DOM
+        function loadMessages(){
+            loadingMsgsFlag = true;
+            fetchMessages()
+            .then(msgPage => {
+                console.log(msgPage)
+                msgPage.data.forEach(msg => {
+                    appendNewMsg(msg, true)
                 })
+                loadingMsgsFlag = false;
+            })
+        }
+
+        // When users scrolls to the top of the chat window load more msgs
+        function handleScrollMsgs(){        
+            if (this.scrollTop < 30 && !loadingMsgsFlag) {
+                loadMessages()   
             }
         }
 
 
-
         const socket = configureWebSocket();
         document.querySelector('#submit').onclick = sendMsg;
-        chatWindow.addEventListener('scroll', loadMoreMessages)
+        chatWindow.addEventListener('scroll', handleScrollMsgs)
 
         /*
         function debounce(func, wait, immediate) {
