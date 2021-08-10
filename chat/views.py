@@ -10,6 +10,7 @@ from .serializers import serialize_message
 
 from django.views.generic import (
     ListView,
+    View,
 )
 
 # Create your views here.
@@ -64,9 +65,31 @@ class LoadMessages(ListView):
         } 
         return JsonResponse(response, **response_kwargs)
 
+#TODO set only for admin authenthication
+class UpdateGroupStatus(View):
+    def patch(self, request, *args, **kwargs):
+        team_id = self.kwargs.get('team_id')
+        print(request, args, kwargs)
 
-#TODO remove team member view
-#TODO handle  delete group, open/close, add looking_for, add stack views
+#TODO set only for admin authenthication
+class RemoveUserFromGroup(View):
+    def delete(self, request, *args, **kwargs):
+        team_id = self.kwargs.get('team_id')
+        print(request, args, kwargs)
+
+#TODO set only for admin authenthication
+class UpdateGroupStack(View):
+    def patch(self, request, *args, **kwargs):
+        team_id = self.kwargs.get('team_id')
+        print(request, args, kwargs)
+
+#TODO set only for admin authenthication
+class UpdateGroupLookingFor(View):
+    def patch(self, request, *args, **kwargs):
+        team_id = self.kwargs.get('team_id')
+        print(request, args, kwargs)
+
+#TODO handle  delete group, open/close, add looking_for, add stack views, remove team member view
 
 
 
