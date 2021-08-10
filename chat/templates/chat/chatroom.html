@@ -38,7 +38,7 @@
         function appendNewMsg(data, loadedMsgs=false) {
             const messageList = document.querySelector('#message-list');
             //#TODO set postion ass li clas
-            const position = (data.username === currentUser) ? 'right' : 'left'
+            const position = (data.sender === currentUser) ? 'right' : 'left'
             const newMsg = document.createElement("li");
             newMsg.innerHTML = `<li>${data.sender}: ${data.content}</li>`;
 
@@ -57,6 +57,7 @@
             const message = messageInputDom.value;
             // Send to websocket
             socket.send(JSON.stringify({
+                'msg_type': 'message',
                 'content': message,
                 'sender': currentUser
             }));
@@ -95,6 +96,7 @@
             return socket
         }
 
+        // Fetches single page of msgs and returns them
         function fetchMessages(){
             const endpoint = window.location.href + '/messages'
 
@@ -168,4 +170,44 @@
         };
         */
     </script>
+
+
+{% comment %} 
+    <li {% if member.is_admin %}style='color:red'{% endif %}>{{ member.creator }} - {{ member.get_role_display }} <span id="user-{{ member.creator.user.id }}-status">🔴</span></li>
+
+    const currentUserId  = '{{ request.user.id }}';
+
+    socket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        console.log(data)
+        if (data['msg_type'] === 'message') {
+            appendNewMsg(data);
+            scrollToChatPosition(percentage=100);
+        }
+        else if (data['msg_type'] === 'user_status') {
+            const creatorNode = document.querySelector('#user-' + data['user_id'] + '-status')
+            creatorNode.innerHTML = data['status'] === 'online' ? '🟢' : '🔴' 
+        }
+    }
+
+    socket.onopen = function (e) {
+        console.log('open', e)
+        //#TODO make user icon online when connection opened
+        loadMessages(initialLoad=true);
+        socket.send(JSON.stringify({
+            'msg_type': 'user_status',
+            'user_id': currentUserId,
+            'status': 'online'
+        }));
+    }
+    socket.onclose = function (e) {
+        console.log('close', e)
+        //#TODO make user icon offline when connection closed
+        socket.send(JSON.stringify({
+            'msg_type': 'user_status',
+            'user_id': currentUserId,
+            'status': 'offline'
+        }));
+    } 
+{% endcomment %}
 {% endblock content %}

@@ -30,7 +30,8 @@ def team_chat(request, team_id):
         )
         return redirect(reverse_lazy('webapp:index'))
     
-    members = team.teammember_set.all()
+    members = team.teammember_set.select_related('creator__user')
+    # members = team.teammember_set.all()
     organization = team.announcement.organization
     # messages = Message.objects.filter(team_id=team_id)
     #TODO settings - delete group, open/close, add looking_for, add stack
