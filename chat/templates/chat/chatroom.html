@@ -10,12 +10,12 @@
         <div class="row d-flex justify-content-center">
             <div class="col-6">
                 <div class="h4">Chatroom dla {{ organization }}</div>
-                <div class="form-control chat-window">
+                <div class="form-control chat-window chat-window-js">
                     <ul id="message-list">
                     </ul>
                 </div>
-                <input class="form-control" id="input" type="text"></br>
-                <input class="btn btn-secondary btn-lg btn-block" id="submit" type="button" value="Send">
+                <input class="form-control msg-field-js" type="text"></br>
+                <input class="btn btn-secondary btn-lg btn-block" id="submit" type="button" value="Send" disabled>
             </div>
             <div class="col-6">
                 <div class="h4">Uczestnicy</div>
@@ -31,7 +31,9 @@
 
     <script>
         const currentUser  = '{{ request.user.email }}';
-        const chatWindow = document.querySelector('.chat-window');
+        const chatWindow = document.querySelector('.chat-window-js');
+        const messageInput = document.querySelector('.msg-field-js');
+        const submitButton = document.querySelector('#submit');
         let msgPageToLoad = 1;
         let loadingMsgsFlag = false;
 
@@ -53,15 +55,14 @@
         }
 
         function sendMsg(event){
-            const messageInputDom = document.querySelector('#input');
-            const message = messageInputDom.value;
+            const message = messageInput.value;
             // Send to websocket
             socket.send(JSON.stringify({
                 'msg_type': 'message',
                 'content': message,
                 'sender': currentUser
             }));
-            messageInputDom.value = '';
+            messageInput.value = '';
         }
 
         function configureWebSocket(){
@@ -138,6 +139,10 @@
             })
         }
 
+        function scrollToChatPosition(percentage) {
+            chatWindow.scrollTop = chatWindow.scrollHeight * (percentage/100);
+        }
+
         // When users scrolls to the top of the chat window load more msgs
         function handleScrollMsgs(){        
             if (this.scrollTop < 30 && !loadingMsgsFlag) {
@@ -145,12 +150,19 @@
             }
         }
 
-        function scrollToChatPosition(percentage) {
-            chatWindow.scrollTop = chatWindow.scrollHeight * (percentage/100);
+        function handleEnterPressed(event) {
+            if (event.key === 'Enter' && !submitButton.disabled) {
+                submitButton.click()
+            }
         }
 
-        const socket = configureWebSocket();
-        document.querySelector('#submit').onclick = sendMsg;
+        const socket = configureWebSocket();        
+        // When user is not typing - disable submit button
+        messageInput.addEventListener('keyup', (e) => {
+            submitButton.disabled = e.target.value ? false : true
+        })
+        document.addEventListener("keyup", e => handleEnterPressed(e));
+        submitButton.addEventListener('click', sendMsg);
         chatWindow.addEventListener('scroll', handleScrollMsgs)
 
         /*
