@@ -99,7 +99,7 @@
 
         // Fetches single page of msgs and returns them
         function fetchMessages(){
-            const endpoint = window.location.href + '/messages'
+            const endpoint = window.location.href + '/wiadomosci'
 
             return fetch(endpoint + `?page=${msgPageToLoad}`)
                     .then(response => {
@@ -123,6 +123,7 @@
         }
 
         // Loads single page of msgs and inserts them to DOM
+        //#TODO add loading spinner
         function loadMessages(initialLoad=false){
             loadingMsgsFlag = true;
             fetchMessages()
