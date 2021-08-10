@@ -32,24 +32,24 @@ class ChatRoomConsumer(AsyncJsonWebsocketConsumer):
     # Receive from websocket
     async def receive_json(self, text_data):
         print('receive ', text_data)
-        await self.save_text_message(text_data['message'])
+        await self.save_text_message(text_data['content'])
         # Send to room group (brodcasts)
         await self.channel_layer.group_send(
             self.chat_room,
             {
                 'type': 'chat.message',
-                'message': text_data['message'],
-                'username': text_data['username']
+                'content': text_data['content'],
+                'sender': text_data['sender']
             }
         )
     
     # Receive message from room group
     async def chat_message(self, event):
-        print('chatroom message', event)
-        # Send to all websockets
+        print('brodcast message', event)
+        # Send to all websockets (brodcast)
         await self.send_json(content={
-            'message': event['message'],
-            'username': event['username']
+            'content': event['content'],
+            'sender': event['sender']
         })
     
     @database_sync_to_async

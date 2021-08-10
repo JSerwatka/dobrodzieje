@@ -1,0 +1,4 @@
+.chat-window {
+    max-height: 40vh;
+    overflow: auto;
+}

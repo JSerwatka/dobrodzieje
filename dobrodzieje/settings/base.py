@@ -14,7 +14,8 @@ from pathlib import Path
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
+# BASE_DIR = Path(__file__).resolve().parent.parent.parent
 DEBUG = False
 
 # Application definition
@@ -48,7 +49,8 @@ ROOT_URLCONF = 'dobrodzieje.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, os.path.join('dobrodzieje', 'templates'))],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        # 'DIRS': [os.path.join(BASE_DIR, os.path.join('dobrodzieje', 'templates'))],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
