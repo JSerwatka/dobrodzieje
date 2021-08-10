@@ -1,5 +1,9 @@
 {% extends 'layout.html' %}
+{% load static %}
 
+{% block load_css %}
+     <link href="{% static 'chat/main.css' %}" rel="stylesheet">
+{% endblock load_css %}
 
 {% block content %}
     <div class="container mt-5">
@@ -17,6 +21,7 @@
                 <input class="btn btn-secondary btn-lg btn-block" id="submit" type="button" value="Send">
             </div>
             <div class="col-6">
+                <div class="h4">Uczestnicy</div>
                 <ul>
                     {% for member in members %}
                         <li {% if member.is_admin %}style='color:red'{% endif %}>{{ member.creator }} - {{ member.get_role_display }}</li>
@@ -27,16 +32,27 @@
     </div>
 
 
-    {{ team_id|json_script:"team-id" }}
-    {{ request.user.email|json_script:"user-username" }}
     <script>
-        function appendNewMsg(rawData) {
+        const currentUser  = '{{ request.user.email }}';
+        const chatWindow = document.querySelector('.chat-window');
+        let msgPageToLoad = 1;
+        let loadingMsgsFlag = false;
+
+        function appendNewMsg(data, loadedMsgs=false) {
             const messageList = document.querySelector('#message-list');
-            const data = JSON.parse(rawData);
-            const newMsg = `<li>${data.username}: ${data.message}</li>`;
+            //#TODO set postion ass li clas
+            const position = (data.username === currentUser) ? 'right' : 'left'
+            const newMsg = document.createElement("li");
+            newMsg.innerHTML = `<li>${data.sender}: ${data.content}</li>`;
 
-            messageList.innerHTML += newMsg;
-
+            // When loading msgs from db add to the start of the chat
+            // otherwise (websocket msgs) ass to the end of the chat
+            if (loadedMsgs) {
+                messageList.prepend(newMsg)
+            }
+            else {
+                messageList.append(newMsg)
+            }
         }
 
         function sendMsg(event){
@@ -44,8 +60,8 @@
             const message = messageInputDom.value;
             // Send to websocket
             socket.send(JSON.stringify({
-                'message': message,
-                'username': JSON.parse(document.getElementById('user-username').textContent)
+                'content': message,
+                'sender': currentUser
             }));
             messageInputDom.value = '';
         }
@@ -61,8 +77,8 @@
             // Configure events
             // Receive from websocket
             socket.onmessage = function (e) {
-                console.log('message', e)
-                appendNewMsg(e.data);
+                const data = JSON.parse(e.data);
+                appendNewMsg(data);
             }
 
             socket.onopen = function (e) {
@@ -78,14 +94,65 @@
             }
 
             return socket
-
         }
+
+        function fetchMessages(){
+            const endpoint = window.location.href + '/messages'
+
+            return fetch(endpoint + `?page=${msgPageToLoad}`)
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        }
+                        throw new Error('Fetching messages failed!');
+                    })
+                    .then(data => {
+                        // If all msgs loaded - disable load msgs functionality
+                        if (msgPageToLoad >= data.numPages) {
+                            console.info('All messages loaded')
+                            chatWindow.removeEventListener('scroll', loadMoreMessages)
+                        }
+                        else {
+                            msgPageToLoad++;
+                        }
+                        return data;
+                    })
+                    .catch(err => console.log(err))
+        }
+
+        // When users scrolls to the top of the chat window load more msgs
+        function loadMoreMessages(){        
+            if (this.scrollTop < 30 && !loadingMsgsFlag) {
+                loadingMsgsFlag = true;
+                fetchMessages()
+                .then(data => {
+                    console.log(data)
+                    loadingMsgsFlag = false;
+                })
+            }
+        }
+
+
 
         const socket = configureWebSocket();
         document.querySelector('#submit').onclick = sendMsg;
-        
+        chatWindow.addEventListener('scroll', loadMoreMessages)
 
-
-        
+        /*
+        function debounce(func, wait, immediate) {
+            var timeout;
+            return function() {
+                var context = this, args = arguments;
+                var later = function() {
+                    timeout = null;
+                    if (!immediate) func.apply(context, args);
+                };
+                var callNow = immediate && !timeout;
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+                if (callNow) func.apply(context, args);
+            };
+        };
+        */
     </script>
 {% endblock content %}
