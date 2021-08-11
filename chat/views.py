@@ -46,7 +46,7 @@ def team_chat(request, team_id):
         'members': members,
         'organization': organization,
         'user_is_admin': current_user_admin,
-        'form': TeamForm
+        'form': TeamForm(instance=team)
     })
 
 #TODO add auhtontication test method
