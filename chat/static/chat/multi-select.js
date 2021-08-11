@@ -1,3 +1,4 @@
+//Based on: https://codepen.io/vdhug/pen/xxbPoJe
 // Initialize function, create initial tokens with itens that are already selected by the user
 function init(element) {
     // Create div that wroaps all the elements inside (select, elements selected, search div) to put select inside
@@ -16,8 +17,8 @@ function init(element) {
     input.addEventListener("keydown", deletePressed);
     input.addEventListener("click", openOptions);
 
-    const dropdown_icon = document.createElement("a");
-    dropdown_icon.setAttribute("href", "");
+    const dropdown_icon = document.createElement("span");
+    dropdown_icon.classList.add("dropdown-icon");
     dropdown_icon.classList.add("dropdown-icon");
 
     dropdown_icon.addEventListener("click", clickDropdown);
@@ -52,9 +53,7 @@ function addPlaceholder(wrapper) {
 
 // Function that create the initial set of tokens with the options selected by the users
 function createInitialTokens(select) {
-    let {
-        options_selected
-    } = getOptions(select);
+    let {options_selected} = getOptions(select);
     const wrapper = select.parentNode;
     for (let i = 0; i < options_selected.length; i++) {
         createToken(wrapper, options_selected[i]);
@@ -67,7 +66,6 @@ function inputChange(e) {
     const wrapper = e.target.parentNode.parentNode;
     const select = wrapper.querySelector("select");
     const dropdown = wrapper.querySelector(".dropdown-icon");
-
     const input_val = e.target.value;
     if (input_val) {
         dropdown.classList.add("active");
@@ -109,21 +107,21 @@ function openOptions(e) {
 }
 
 // Function that create a token inside of a wrapper with the given value
-function createToken(wrapper, value) {
+function createToken(wrapper, optionObj) {
     const search = wrapper.querySelector(".search-container");
     // Create token wrapper
     const token = document.createElement("div");
     token.classList.add("selected-wrapper");
     const token_span = document.createElement("span");
     token_span.classList.add("selected-label");
-    token_span.innerText = value;
-    const close = document.createElement("a");
+    token_span.textContent = optionObj.text;
+    const close = document.createElement("span");
     close.classList.add("selected-close");
     close.setAttribute("tabindex", "-1");
-    close.setAttribute("data-option", value);
+    close.setAttribute("data-option", optionObj.value);
     close.setAttribute("data-hits", 0);
-    close.setAttribute("href", "");
-    close.innerText = "x";
+    // close.setAttribute("href", "#");
+    close.textContent = "x";
     close.addEventListener("click", removeToken)
     token.appendChild(token_span);
     token.appendChild(close);
@@ -167,13 +165,10 @@ function clearAutocompleteList(select) {
 
 // Populate the autocomplete list following a given query from the user
 function populateAutocompleteList(select, query, dropdown = false) {
-    const {
-        autocomplete_options
-    } = getOptions(select);
+    const {autocomplete_options} = getOptions(select);
 
 
     let options_to_show;
-
     if (dropdown)
         options_to_show = autocomplete_options;
     else
@@ -188,11 +183,11 @@ function populateAutocompleteList(select, query, dropdown = false) {
     if (result_size == 1) {
 
         const li = document.createElement("li");
-        li.innerText = options_to_show[0];
-        li.setAttribute('data-value', options_to_show[0]);
+        li.textContent = options_to_show[0].text;
+        li.setAttribute('data-value', options_to_show[0].value);
         li.addEventListener("click", selectOption);
         autocomplete_list.appendChild(li);
-        if (query.length == options_to_show[0].length) {
+        if (query.length == options_to_show[0].text.length) {
             const event = new Event('click');
             li.dispatchEvent(event);
 
@@ -201,15 +196,15 @@ function populateAutocompleteList(select, query, dropdown = false) {
 
         for (let i = 0; i < result_size; i++) {
             const li = document.createElement("li");
-            li.innerText = options_to_show[i];
-            li.setAttribute('data-value', options_to_show[i]);
+            li.textContent = options_to_show[i].text;
+            li.setAttribute('data-value', options_to_show[i].value);
             li.addEventListener("click", selectOption);
             autocomplete_list.appendChild(li);
         }
     } else {
         const li = document.createElement("li");
         li.classList.add("not-cursor");
-        li.innerText = "Brak więcej opcji";
+        li.textContent = "Brak więcej opcji";
         autocomplete_list.appendChild(li);
     }
 }
@@ -222,7 +217,13 @@ function selectOption(e) {
     const option = wrapper.querySelector(`select option[value="${e.target.dataset.value}"]`);
 
     option.setAttribute("selected", "");
-    createToken(wrapper, e.target.dataset.value);
+
+    const optionObj = {
+        value: e.target.dataset.value,
+        text: e.target.textContent
+    };
+
+    createToken(wrapper, optionObj);
     if (input_search.value) {
         input_search.value = "";
     }
@@ -236,7 +237,7 @@ function selectOption(e) {
     if (!autocomplete_list.children.length) {
         const li = document.createElement("li");
         li.classList.add("not-cursor");
-        li.innerText = "No options found";
+        li.textContent = "No options found";
         autocomplete_list.appendChild(li);
     }
 
@@ -255,8 +256,11 @@ function autocomplete(query, options) {
     let options_return = [];
 
     for (let i = 0; i < options.length; i++) {
-        if (query.toLowerCase() === options[i].slice(0, query.length).toLowerCase()) {
-            options_return.push(options[i]);
+        if (query.toLowerCase() === options[i].text.slice(0, query.length).toLowerCase()) {
+            options_return.push({
+                value: options[i].value,
+                text: options[i].text
+            });
         }
     }
     return options_return;
@@ -268,13 +272,21 @@ function getOptions(select) {
     // Select all the options available
     const all_options = Array.from(
         select.querySelectorAll("option")
-    ).map(el => el.value);
-
+    ).map(el => {
+        return {
+            value: el.value, 
+            text: el.textContent
+        };
+    });
     // Get the options that are selected from the user
     const options_selected = Array.from(
         select.querySelectorAll("option:checked")
-    ).map(el => el.value);
-
+    ).map(el => {
+        return {
+            value: el.value, 
+            text: el.textContent
+        };
+    });
     // Create an autocomplete options array with the options that are not selected by the user
     const autocomplete_options = [];
     all_options.forEach(option => {
@@ -317,9 +329,8 @@ function deletePressed(e) {
     const input_search = e.target;
     const key = e.keyCode || e.charCode;
     const tokens = wrapper.querySelectorAll(".selected-wrapper");
-
     if (tokens.length) {
-        const last_token_x = tokens[tokens.length - 1].querySelector("a");
+        const last_token_x = tokens[tokens.length - 1].querySelector(".selected-close");
         let hits = +last_token_x.dataset.hits;
 
         if (key == 8 || key == 46) {
@@ -356,7 +367,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // get select that has the options available
     const select = document.querySelectorAll("[data-multi-select-plugin]");
     select.forEach(select => {
-
         init(select);
     });
 
