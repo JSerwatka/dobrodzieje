@@ -65,31 +65,31 @@ class LoadMessages(ListView):
         } 
         return JsonResponse(response, **response_kwargs)
 
+#TODO handle  delete group, open/close, add looking_for, add stack views, remove team member view
+
+
 #TODO set only for admin authenthication
-class UpdateGroupStatus(View):
+class TeamSettings(View):
+    #TODO handle open/close, add looking_for, add stack views
     def patch(self, request, *args, **kwargs):
         team_id = self.kwargs.get('team_id')
         print(request, args, kwargs)
 
-#TODO set only for admin authenthication
-class RemoveUserFromGroup(View):
+    #TODO handle  delete group,
     def delete(self, request, *args, **kwargs):
         team_id = self.kwargs.get('team_id')
         print(request, args, kwargs)
 
+
 #TODO set only for admin authenthication
-class UpdateGroupStack(View):
-    def patch(self, request, *args, **kwargs):
+class RemoveUserFromTeam(View):
+    #TODO handle , remove team member view
+    def delete(self, request, *args, **kwargs):
         team_id = self.kwargs.get('team_id')
         print(request, args, kwargs)
 
-#TODO set only for admin authenthication
-class UpdateGroupLookingFor(View):
-    def patch(self, request, *args, **kwargs):
-        team_id = self.kwargs.get('team_id')
-        print(request, args, kwargs)
 
-#TODO handle  delete group, open/close, add looking_for, add stack views, remove team member view
+
 
 
 
