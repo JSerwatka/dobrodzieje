@@ -1,6 +1,6 @@
 from django.http.response import JsonResponse
 from django.urls.base import reverse_lazy
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 from django.http import Http404
 
@@ -11,7 +11,10 @@ from .serializers import serialize_message
 from django.views.generic import (
     ListView,
     View,
+    UpdateView,
 )
+
+from .forms import TeamForm
 
 # Create your views here.
 def team_chat(request, team_id):
@@ -33,8 +36,8 @@ def team_chat(request, team_id):
     
     members = team.teammember_set.select_related('creator__user')
     # members = team.teammember_set.all()
+    current_user_admin = members.filter(creator__user=request.user).first().is_admin
     organization = team.announcement.organization
-    # messages = Message.objects.filter(team_id=team_id)
     #TODO settings - delete group, open/close, add looking_for, add stack
 
     return render(request, 'chat/chatroom.html', {
@@ -42,7 +45,8 @@ def team_chat(request, team_id):
         'team': team,
         'members': members,
         'organization': organization,
-        # 'messages': messages
+        'user_is_admin': current_user_admin,
+        'form': TeamForm
     })
 
 #TODO add auhtontication test method
@@ -65,21 +69,27 @@ class LoadMessages(ListView):
         } 
         return JsonResponse(response, **response_kwargs)
 
-#TODO handle  delete group, open/close, add looking_for, add stack views, remove team member view
-
 
 #TODO set only for admin authenthication
-class TeamSettings(View):
+class UpdateTeamSettings(UpdateView):
+    model = Team
+    form_class = TeamForm
+    http_method_names = ['post']
+
     #TODO handle open/close, add looking_for, add stack views
-    def patch(self, request, *args, **kwargs):
+    def get_object(self):
         team_id = self.kwargs.get('team_id')
-        print(request, args, kwargs)
+        return Team.objects.get_object_or_404(id=team_id)
 
-    #TODO handle  delete group,
-    def delete(self, request, *args, **kwargs):
-        team_id = self.kwargs.get('team_id')
-        print(request, args, kwargs)
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        return super().form_valid(form)
 
+
+#TODO handle  delete group,
+# def delete(self, request, *args, **kwargs):
+#     team_id = self.kwargs.get('team_id')
+#     print(request, args, kwargs)
 
 #TODO set only for admin authenthication
 class RemoveUserFromTeam(View):

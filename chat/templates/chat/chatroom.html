@@ -1,11 +1,54 @@
 {% extends 'layout.html' %}
 {% load static %}
+{% load widget_tweaks %}
 
 {% block load_css %}
      <link href="{% static 'chat/main.css' %}" rel="stylesheet">
+     <link href="{% static 'chat/multi-select.css' %}" rel="stylesheet">
 {% endblock load_css %}
 
 {% block content %}
+    {% if user_is_admin %}
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#teamSettingsModal">
+            Ustawienia
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="teamSettingsModal" tabindex="-1" aria-labelledby="teamSettingsModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="teamSettingsModalLabel">Ustawienia</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="" method="POST">
+                            {% csrf_token %}
+                            <div>
+                                {{ form.our_stack.label_tag }}
+                                {% render_field form.our_stack|attr:"data-multi-select-plugin"%}
+                            </div>
+                            <div>
+                                {{ form.looking_for.label_tag }}
+                                {% render_field form.looking_for|attr:"data-multi-select-plugin"%}
+                            </div>
+                            <div class="form-check form-switch">
+                                {{ form.is_closed.label_tag }}
+                                {% render_field form.is_closed class="form-check-input" %}
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Anuluj</button>
+                        <button type="button" class="btn btn-dark">Zapisz</button>
+                    </div>
+                    </div>
+            </div>
+        </div>
+    {% endif %}
+
+
     <div class="container mt-5">
         <div class="row d-flex justify-content-center">
             <div class="col-6">
@@ -28,7 +71,7 @@
         </div>
     </div>
 
-
+    <script src="{% static 'chat/multi-select.js' %}"></script>
     <script>
         const currentUser  = '{{ request.user.email }}';
         const chatWindow = document.querySelector('.chat-window-js');
@@ -165,7 +208,6 @@
         document.addEventListener("keyup", e => handleEnterPressed(e));
         submitButton.addEventListener('click', sendMsg);
         chatWindow.addEventListener('scroll', handleScrollMsgs)
-
         /*
         function debounce(func, wait, immediate) {
             var timeout;

@@ -27,11 +27,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'webapp',
+    'chat',
     'ckeditor',
     'crispy_forms',
     'django_filters',
     'channels',
-    'chat'
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
