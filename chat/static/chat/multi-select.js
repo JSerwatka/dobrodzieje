@@ -1,4 +1,4 @@
-//Based on: https://codepen.io/vdhug/pen/xxbPoJe
+// Based on: https://codepen.io/vdhug/pen/xxbPoJe
 // Initialize function, create initial tokens with itens that are already selected by the user
 function init(element) {
     // Create div that wroaps all the elements inside (select, elements selected, search div) to put select inside
@@ -290,7 +290,7 @@ function getOptions(select) {
     // Create an autocomplete options array with the options that are not selected by the user
     const autocomplete_options = [];
     all_options.forEach(option => {
-        if (!options_selected.includes(option)) {
+        if (!options_selected.some(selected => selected.value === option.value)) {
             autocomplete_options.push(option);
         }
     });
