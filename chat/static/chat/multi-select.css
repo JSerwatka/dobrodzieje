@@ -150,14 +150,14 @@ select[data-multi-select-plugin] {
 .search-container ul li {
   display: block;
   text-align: left;
-  padding: 8px 29px 2px 12px;
+  padding: 8px 0px 8px 12px;
   border-bottom: 1px solid #ccc;
   font-size: 14px;
-  min-height: 31px;
+  /* min-height: 31px; */
 }
 
 .search-container ul li:first-child {
-  border-top: 1px solid #ccc;
+  /* border-top: 1px solid #ccc; */
   border-radius: 4px 0px 0 0;
 }
 
