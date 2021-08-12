@@ -48,31 +48,55 @@
             </div>
         </div>
 
-        <!-- Button trigger delete modal -->
+        <!-- Button trigger delete team modal -->
         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteTeamModal">
             Usuń drużynę
         </button>
 
-        <!-- Delete Modal -->
+        <!-- Delete Team Modal -->
         <div class="modal fade" id="deleteTeamModal" tabindex="-1" aria-labelledby="deleteTeamModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteTeamModalLabel">Jesteś pewien?</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteTeamModalLabel">Jesteś pewien?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Ta akcja jest nieodwracalna i będzie skutkowała usunięciem całej drużyny, jej wiadomości, jak i odłączenia jej od ogłoszenia. 
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Anuluj</button>
+                    <form action="{% url 'chat:delete-team' team_id=team_id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Usuń</button>
+                    </form>
+                </div>
+                </div>
             </div>
-            <div class="modal-body">
-                Ta akcja jest nieodwracalna i będzie skutkowała usunięcie całej grupy, jej wiadomości, jak i odłączenia jej od ogłoszenia. 
+        </div>        
+        
+        
+        <!-- Delete Team Member Modal -->
+        <div class="modal fade" id="deleteTeamMemberModal" tabindex="-1" aria-labelledby="deleteTeamMemberModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteTeamMemberModalLabel">Jesteś pewien?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Ta akcja jest nieodwracalna i będzie skutkowała usunięcie użytkownika z drużyny. 
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Anuluj</button>
+                    <form action="{% url 'chat:delete-team-member' team_id=team_id %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="member-id" class="js-delete-member-input">
+                        <button type="submit" class="btn btn-danger">Usuń</button>
+                    </form>
+                </div>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Anuluj</button>
-                <form action="{% url 'chat:delete-team' team_id=team_id %}" method="POST">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Usuń</button>
-                </form>
-            </div>
-            </div>
-        </div>
         </div>
     {% endif %}
 
@@ -92,7 +116,13 @@
                 <div class="h4">Uczestnicy</div>
                 <ul>
                     {% for member in members %}
-                        <li {% if member.is_admin %}style='color:red'{% endif %}>{{ member.creator }} - {{ member.get_role_display }}</li>
+                        <li {% if member.is_admin %}style='color:red'{% endif %}>{{ member.creator }} - {{ member.get_role_display }} 
+                            {% if not member.is_admin and user_is_admin %}
+                                <!-- Button trigger delete team member modal -->        
+                                <button type="button" class="btn btn-danger js-delete-member" data-bs-toggle="modal" data-bs-target="#deleteTeamMemberModal" data-member-id="{{ member.id }}">
+                                    X
+                                </button>
+                            {% endif %}</li> 
                     {% endfor %}
                 </ul>
             </div>
@@ -100,6 +130,21 @@
     </div>
 
     <script src="{% static 'chat/multi-select.js' %}"></script>
+    <script>
+        function deleteModelControl() {
+            const deleteButtons = document.querySelectorAll('.js-delete-member');
+            const modalDeleteMembetInput = document.querySelector('.js-delete-member-input');
+
+            deleteButtons.forEach(btn => btn.addEventListener('click', function (e) {
+                // Get member's ID
+                const memberId = this.dataset.memberId;
+
+                // Inject it to the modal
+                modalDeleteMembetInput.value = memberId;
+            }));
+        }
+        deleteModelControl();
+    </script>
     <script>
         //{% comment %} #TODO disable multiselects in settings if group closed - add tooltip or smth {% endcomment %}
     </script>

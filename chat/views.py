@@ -4,8 +4,7 @@ from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.http import Http404
 from django.views.generic.edit import DeleteView
-
-from webapp.models import Team, Creator
+from webapp.models import Team, Creator, TeamMember
 from .models import Message
 from .serializers import serialize_message
 
@@ -98,12 +97,14 @@ class DeleteTeam(DeleteView):
         return reverse_lazy('webapp:index')
 
 
-#TODO set only for admin authenthication
-class RemoveUserFromTeam(View):
-    #TODO handle , remove team member view
-    def delete(self, request, *args, **kwargs):
+#TODO set only for admin authenthication + admin
+class RemoveUserFromTeam(DeleteView):
+    def get_object(self):
+        member_id = self.request.POST.get('member-id')
+        return TeamMember.objects.get(id=member_id)
+    def get_success_url(self):
         team_id = self.kwargs.get('team_id')
-        print(request, args, kwargs)
+        return reverse_lazy('chat:team-chat', kwargs={'team_id': team_id})
 
 
 

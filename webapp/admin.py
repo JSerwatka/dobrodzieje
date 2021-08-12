@@ -9,7 +9,7 @@ class UserAdminConfig(UserAdmin):
     search_fields = ('email',)
     ordering = ('-date_joined',)
     list_filter = ('is_active', 'is_staff', 'is_organization', 'is_creator')
-    list_display = ('email', 'is_active', 'is_staff', 'is_organization', 'is_creator')
+    list_display = ('id', 'email', 'is_active', 'is_staff', 'is_organization', 'is_creator')
 
     fieldsets = (
         (None, {'fields': ('email',)}),
@@ -62,5 +62,5 @@ class TeamAdmin(admin.ModelAdmin):
 
 @admin.register(TeamMember)
 class TeamMemberAdmin(admin.ModelAdmin):
-    list_display = ('get_creator_str', 'get_team_str', 'role', 'is_admin')
+    list_display = ('id', 'get_creator_str', 'get_team_str', 'role', 'is_admin')
     list_filter = ('role', 'is_admin')
