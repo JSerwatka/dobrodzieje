@@ -82,6 +82,7 @@ select[data-multi-select-plugin] {
   color: #000;
   text-shadow: 0 1px 0 #fff;
   font-weight: 700;
+  cursor: pointer;
 }
 
 .search-container {
@@ -117,6 +118,7 @@ select[data-multi-select-plugin] {
   width: 10px;
   height: 10px;
   border: 0 !important;
+  cursor: pointer;
   /* needed */
   -webkit-appearance: none;
   -moz-appearance: none;
