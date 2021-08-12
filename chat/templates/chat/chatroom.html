@@ -22,27 +22,29 @@
                         <h5 class="modal-title" id="teamSettingsModalLabel">Ustawienia</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">
-                        <form action="" method="POST">
-                            {% csrf_token %}
-                            <div>
-                                {{ form.our_stack.label_tag }}
-                                {% render_field form.our_stack|attr:"data-multi-select-plugin"%}
+                        <form action="{% url 'chat:update-team-settings' team_id=team_id %}" method="POST">
+                            <div class="modal-body">
+                                
+                                    {% csrf_token %}
+                                    <div>
+                                        {{ form.our_stack.label_tag }}
+                                        {% render_field form.our_stack|attr:"data-multi-select-plugin"%}
+                                    </div>
+                                    <div>
+                                        {{ form.looking_for.label_tag }}
+                                        {% render_field form.looking_for|attr:"data-multi-select-plugin"%}
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        {{ form.is_closed.label_tag }}
+                                        {% render_field form.is_closed class="form-check-input" %}
+                                    </div>
+                                
                             </div>
-                            <div>
-                                {{ form.looking_for.label_tag }}
-                                {% render_field form.looking_for|attr:"data-multi-select-plugin"%}
-                            </div>
-                            <div class="form-check form-switch">
-                                {{ form.is_closed.label_tag }}
-                                {% render_field form.is_closed class="form-check-input" %}
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Anuluj</button>
+                                <button type="submit" class="btn btn-dark">Zapisz</button>
                             </div>
                         </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Anuluj</button>
-                        <button type="button" class="btn btn-dark">Zapisz</button>
-                    </div>
                     </div>
             </div>
         </div>
@@ -72,6 +74,9 @@
     </div>
 
     <script src="{% static 'chat/multi-select.js' %}"></script>
+    <script>
+        //{% comment %} #TODO disable multiselects in settings if group closed - add tooltip or smth {% endcomment %}
+    </script>
     <script>
         const currentUser  = '{{ request.user.email }}';
         const chatWindow = document.querySelector('.chat-window-js');

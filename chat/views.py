@@ -1,6 +1,6 @@
 from django.http.response import JsonResponse
 from django.urls.base import reverse_lazy
-from django.shortcuts import redirect, render, get_object_or_404
+from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.http import Http404
 
@@ -75,15 +75,17 @@ class UpdateTeamSettings(UpdateView):
     model = Team
     form_class = TeamForm
     http_method_names = ['post']
+    success_url = ''
 
     #TODO handle open/close, add looking_for, add stack views
     def get_object(self):
         team_id = self.kwargs.get('team_id')
-        return Team.objects.get_object_or_404(id=team_id)
+        return Team.objects.get(id=team_id)
 
-    def form_valid(self, form):
-        print(form.cleaned_data)
-        return super().form_valid(form)
+    def get_success_url(self):
+        print(self.kwargs)
+        team_id = self.kwargs.get('team_id')
+        return reverse_lazy('chat:team-chat', kwargs={'team_id': team_id})
 
 
 #TODO handle  delete group,
