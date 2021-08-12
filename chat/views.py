@@ -3,6 +3,7 @@ from django.urls.base import reverse_lazy
 from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.http import Http404
+from django.views.generic.edit import DeleteView
 
 from webapp.models import Team, Creator
 from .models import Message
@@ -70,7 +71,7 @@ class LoadMessages(ListView):
         return JsonResponse(response, **response_kwargs)
 
 
-#TODO set only for admin authenthication
+#TODO set only for admin authenthication + admin
 class UpdateTeamSettings(UpdateView):
     model = Team
     form_class = TeamForm
@@ -83,15 +84,19 @@ class UpdateTeamSettings(UpdateView):
         return Team.objects.get(id=team_id)
 
     def get_success_url(self):
-        print(self.kwargs)
         team_id = self.kwargs.get('team_id')
         return reverse_lazy('chat:team-chat', kwargs={'team_id': team_id})
 
 
-#TODO handle  delete group,
-# def delete(self, request, *args, **kwargs):
-#     team_id = self.kwargs.get('team_id')
-#     print(request, args, kwargs)
+#TODO set only for admin authenthication + admin
+class DeleteTeam(DeleteView):
+    def get_object(self):
+        team_id = self.kwargs.get('team_id')
+        return Team.objects.get(id=team_id)
+
+    def get_success_url(self):
+        return reverse_lazy('webapp:index')
+
 
 #TODO set only for admin authenthication
 class RemoveUserFromTeam(View):

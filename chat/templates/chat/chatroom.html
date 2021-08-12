@@ -9,12 +9,12 @@
 
 {% block content %}
     {% if user_is_admin %}
-        <!-- Button trigger modal -->
+        <!-- Button trigger settings modal -->
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#teamSettingsModal">
             Ustawienia
         </button>
 
-        <!-- Modal -->
+        <!-- Settings Modal -->
         <div class="modal fade" id="teamSettingsModal" tabindex="-1" aria-labelledby="teamSettingsModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -24,7 +24,6 @@
                     </div>
                         <form action="{% url 'chat:update-team-settings' team_id=team_id %}" method="POST">
                             <div class="modal-body">
-                                
                                     {% csrf_token %}
                                     <div>
                                         {{ form.our_stack.label_tag }}
@@ -47,6 +46,33 @@
                         </form>
                     </div>
             </div>
+        </div>
+
+        <!-- Button trigger delete modal -->
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteTeamModal">
+            Usuń drużynę
+        </button>
+
+        <!-- Delete Modal -->
+        <div class="modal fade" id="deleteTeamModal" tabindex="-1" aria-labelledby="deleteTeamModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteTeamModalLabel">Jesteś pewien?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Ta akcja jest nieodwracalna i będzie skutkowała usunięcie całej grupy, jej wiadomości, jak i odłączenia jej od ogłoszenia. 
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Anuluj</button>
+                <form action="{% url 'chat:delete-team' team_id=team_id %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Usuń</button>
+                </form>
+            </div>
+            </div>
+        </div>
         </div>
     {% endif %}
 
