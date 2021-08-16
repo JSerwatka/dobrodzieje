@@ -35,6 +35,25 @@ class User(AbstractBaseUser,PermissionsMixin):
         return self.email
 
 
+class Voivodeship(models.Model):
+    name = models.CharField(max_length=255, blank=False, null=False)
+
+    def __str__(self):
+        return self.name
+
+
+class City(models.Model):
+    voivodeship = models.ForeignKey(Voivodeship, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255, blank=False)
+
+    class Meta:
+        verbose_name_plural = 'Cities'
+        ordering = ('name',)
+
+    def __str__(self):
+        return self.name
+
+
 class Organization(models.Model):
     ORGANIZATION_CATEGORY_CHOICES = [
         ('DP', 'Działalnośc prospołeczna'),
@@ -55,8 +74,7 @@ class Organization(models.Model):
     fb_url = models.URLField('facebook page URL', blank=True, null=True)
     twitter_url = models.URLField('twitter accout URL', blank=True, null=True)
     KRS = models.CharField(max_length=10, blank=True, null=True)
-    #TODO miejscowość
-    #TODO województwo
+    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.name
@@ -156,22 +174,7 @@ class TeamMember(models.Model):
         unique_together = ['creator', 'team']
 
 
-class Voivodeship(models.Model):
-    name = models.CharField(max_length=255, blank=False, null=False)
 
-    def __str__(self):
-        return self.name
-
-
-class City(models.Model):
-    voivodeship = models.ForeignKey(Voivodeship, on_delete=models.CASCADE)
-    name = models.CharField(max_length=255, blank=False, null=False)
-
-    class Meta:
-        verbose_name_plural = 'Cities'
-
-    def __str__(self):
-        return self.name
 
 
 

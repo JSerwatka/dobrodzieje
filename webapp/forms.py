@@ -1,10 +1,11 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from ckeditor.widgets import CKEditorWidget
-from .models import Announcement, User, Organization, Creator
+from django.forms import widgets
+from .models import Announcement, User, Organization, Creator, City
 from django.db import transaction
 
-class OrganizationRegisterForm(UserCreationForm):
+class OrganizationFieldsMixin(forms.ModelForm):
     name = forms.CharField(required=True, label='Nazwa organizacji',
                            widget=forms.TextInput(attrs={'aria-label': 'Podaj nazwę organizacji'}))
     category = forms.ChoiceField(choices=Organization.ORGANIZATION_CATEGORY_CHOICES, label='Kategoria', 
@@ -22,11 +23,15 @@ class OrganizationRegisterForm(UserCreationForm):
                                      'aria-label': 'Wpisz adres strony (np. https://twitter.com/PAH_org)'
                                  }))
     KRS = forms.CharField(required=False, label='Numer KRS', max_length=10,
-                          widget=forms.TextInput(attrs={'aria-label': 'Podaj numer KRS'}))
+                          widget=forms.TextInput(attrs={'aria-label': 'Podaj numer KRS'}))                   
+    city = forms.ModelChoiceField(required=False, label='Miasto', queryset=City.objects.all())
 
+
+class OrganizationRegisterForm(UserCreationForm, OrganizationFieldsMixin):
     class Meta:
         model = User
         fields = ['email', 'password1', 'password2']
+
 
     @transaction.atomic
     def save(self):
@@ -41,6 +46,7 @@ class OrganizationRegisterForm(UserCreationForm):
         organization.fb_url = self.cleaned_data.get('fb_url')
         organization.twitter_url = self.cleaned_data.get('twitter_url')
         organization.KRS = self.cleaned_data.get('KRS')
+        organization.city = self.cleaned_data.get('city')
         organization.save()
         return user
         
@@ -92,7 +98,6 @@ class AnnouncementForm(forms.ModelForm):
                                  widget=forms.URLInput(attrs={'aria-label': 'Adres obecnej strony (jeśli istnieje)'}))
     content  = forms.CharField(required=True, label='Treść ogłoszenia', 
                                widget=CKEditorWidget(attrs={'aria-label': 'Podaj treść ogłoszenia'}))
-
     #TODO def clean_content(self): - NO SCRIPTS
 
     class Meta:
@@ -100,10 +105,10 @@ class AnnouncementForm(forms.ModelForm):
         fields = ['content', 'logo', 'old_website']
 
 
-class OrganizationEditForm(forms.ModelForm):
+class OrganizationEditForm(OrganizationFieldsMixin):
     class Meta:
         model = Organization
-        fields = ['name', 'category', 'phone_number', 'fb_url', 'twitter_url', 'KRS']
+        fields = ['name', 'category', 'phone_number', 'fb_url', 'twitter_url', 'KRS', 'city']
 
 
 class CreatorEditForm(forms.ModelForm):

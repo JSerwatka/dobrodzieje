@@ -1,3 +1,5 @@
+# Based on https://www.cypis.net/blog/posts/baza-miast-z-podzialem-na-wojewodztwa
+
 from webapp.models import City, Voivodeship
 
 
