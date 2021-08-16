@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'django_filters',
     'channels',
-    'widget_tweaks',
+    'widget_tweaks'
 ]
 
 MIDDLEWARE = [

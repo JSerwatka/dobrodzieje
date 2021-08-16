@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, Organization, Creator, Announcement, Team, TeamMember
+from .models import User, Organization, Creator, Announcement, Team, TeamMember, City, Voivodeship
 
 
 @admin.register(User)
@@ -64,3 +64,16 @@ class TeamAdmin(admin.ModelAdmin):
 class TeamMemberAdmin(admin.ModelAdmin):
     list_display = ('id', 'get_creator_str', 'get_team_str', 'role', 'is_admin')
     list_filter = ('role', 'is_admin')
+
+
+@admin.register(City)
+class CityAdmin(admin.ModelAdmin):
+    ordering = ('name',)
+    list_display = ('name', 'voivodeship')
+    list_filter = ('voivodeship',)
+    
+
+@admin.register(Voivodeship)
+class VoivodeshipAdmin(admin.ModelAdmin):
+    ordering = ('name',)
+    list_display = ('name',)

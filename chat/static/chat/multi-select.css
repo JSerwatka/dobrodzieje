@@ -1,5 +1,3 @@
-/*#TODO add add cursor pointer to 'x' and dropdown-icon  */
-
 select[data-multi-select-plugin] {
   display: none !important;
 }

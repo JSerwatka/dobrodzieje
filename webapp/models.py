@@ -156,4 +156,23 @@ class TeamMember(models.Model):
         unique_together = ['creator', 'team']
 
 
+class Voivodeship(models.Model):
+    name = models.CharField(max_length=255, blank=False, null=False)
+
+    def __str__(self):
+        return self.name
+
+
+class City(models.Model):
+    voivodeship = models.ForeignKey(Voivodeship, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255, blank=False, null=False)
+
+    class Meta:
+        verbose_name_plural = 'Cities'
+
+    def __str__(self):
+        return self.name
+
+
+
 #TODO Notifications model
