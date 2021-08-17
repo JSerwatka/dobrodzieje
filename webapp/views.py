@@ -84,7 +84,12 @@ class AnnouncementList(ListView):
     def get_queryset(self):
         qs = Announcement.objects.select_related('organization').order_by('created_on')
         self.filter_announcements = AnnouncementFilter(self.request.GET, queryset=qs)
-        return self.filter_announcements.qs
+        voivodeship_id = self.request.GET.get('voivodeship')
+        if voivodeship_id:
+            output_qs = self.filter_announcements.qs.filter(organization__city__voivodeship_id=voivodeship_id)
+        else:
+            output_qs = self.filter_announcements.qs
+        return output_qs
 
 
 class AnnouncementDetails(DetailView):

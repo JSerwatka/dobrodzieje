@@ -5,7 +5,9 @@
     <div class="container">
         <form method="GET">
             {{ filter_announcements.form|crispy }}
-            <input type="submit" class="btn btn-primary" value="Filtruj" />
+            {% include 'webapp/partials/poland_map.html' %}
+            <input class="voivodeship-input-js" type="hidden" name="voivodeship">
+            <input type="submit" class="btn btn-primary" value="Filtruj">
         </form>
     </div>
     <div class="container mt-3">
@@ -15,4 +17,33 @@
     </div>
 
     {% include "partials/pagination.html" %}
+
+    <script>
+        const regions = document.querySelectorAll('path.region');
+        const voivodeshipInput = document.querySelector('.voivodeship-input-js');
+        //#TODO fix lack of selection after refresh
+        // If voivodeship quer param present (autoselection after refresh)
+        //const voivodeshipQueryId = (new URL(document.location)).searchParams.get('voivodeship');
+        //const voivodeshipQueryPath = document.getElementById(voivodeshipQueryId);
+        //if (voivodeshipQueryPath) selectRegion(voivodeshipQueryPath);
+        
+        function selectRegion() {
+            // Clear all regions from selection
+            regions.forEach(region => {
+                region.classList.remove('selected');
+            })
+            // if voivodeshipPath from query params is present use it
+            //const voivodeshipPath = voivodeshipQueryPath ? voivodeshipQueryPath : this
+
+            // Set the clicked region as selected
+            this.classList.add('selected');
+
+            // Insert its id to the form input
+            voivodeshipInput.value = this.id;
+        }
+
+        regions.forEach(region => {
+            region.addEventListener('click', selectRegion)
+        })
+    </script>
 {% endblock %}
