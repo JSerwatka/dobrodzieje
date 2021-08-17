@@ -78,13 +78,13 @@ class AnnouncementList(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['navbar_active'] = 'announcement-list'
-        context['filter_organization'] = self.filter_organization
+        context['filter_announcements'] = self.filter_announcements
         return context
 
     def get_queryset(self):
         qs = Announcement.objects.select_related('organization').order_by('created_on')
-        self.filter_organization = AnnouncementFilter(self.request.GET, queryset=qs)
-        return self.filter_organization.qs
+        self.filter_announcements = AnnouncementFilter(self.request.GET, queryset=qs)
+        return self.filter_announcements.qs
 
 
 class AnnouncementDetails(DetailView):
