@@ -1,10 +1,27 @@
 {% extends 'layout.html' %}
 {% load crispy_forms_tags %}
+{% load static %}
+{% load widget_tweaks %}
+
+
+{% block load_css %}
+     <link href="{% static 'chat/multi-select.css' %}" rel="stylesheet">
+{% endblock load_css %}
 
 {% block content %}
     <div class="container">
         <form method="GET">
-            {{ filter_announcements.form|crispy }}
+            {{ filter_announcements.form.category|as_crispy_field }}
+            {{ filter_announcements.form.city|as_crispy_field }}
+            {% comment %} {{ filter_announcements.form.category|crispy }} {% endcomment %}
+            <div>
+                {{ filter_announcements.form.stack.label_tag }}
+                {% render_field filter_announcements.form.stack|attr:"data-multi-select-plugin"%}
+            </div>
+            <div>
+                {{ filter_announcements.form.looking_for.label_tag }}
+                {% render_field filter_announcements.form.looking_for|attr:"data-multi-select-plugin"%}
+            </div>
             {% include 'webapp/partials/poland_map.html' %}
             <input class="voivodeship-input-js" type="hidden" name="voivodeship">
             <input type="submit" class="btn btn-primary" value="Filtruj">
@@ -54,4 +71,5 @@
             region.addEventListener('click', selectRegion)
         })
     </script>
+    <script src="{% static 'chat/multi-select.js' %}"></script>
 {% endblock %}

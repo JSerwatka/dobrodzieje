@@ -4,6 +4,7 @@ from webapp.models import Team
 from webapp.models import Roles
 
 class TeamForm(forms.ModelForm):
+    #TODO make form fully cripsy - without widget tweaks
     our_stack = forms.MultipleChoiceField(label="Jakich technologii używamy", choices=Team.TECHNOLOGIES_CHOICES, required=False)
     # our_stack = forms.MultipleChoiceField(label="Jakich technologii używamy", choices=Team.TECHNOLOGIES_CHOICES, required=False, widget=forms.Select(attrs={'data-multi-select-plugin': None}))
     looking_for = forms.MultipleChoiceField(label="Kogo poszukujemy:", choices=Roles.choices, required=False)

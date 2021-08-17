@@ -20,6 +20,7 @@ class AnnouncementFilter(django_filters.FilterSet):
                                                       field_name='team__looking_for',
                                                       lookup_expr='icontains',
                                                       choices=Roles.choices)
+    #TODO make form fully cripsy - without widget tweaks
     # stack = django_filters.MultipleChoiceFilter(label='W jakich technologiach chcesz pracować',
     #                                             field_name='team__our_stack',
     #                                             choices=Team.TECHNOLOGIES_CHOICES,
