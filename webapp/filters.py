@@ -1,12 +1,14 @@
 from django.contrib.postgres import fields
 from django.db.models.enums import Choices
 import django_filters
-from .models import Announcement, Organization, Team, Roles
+from .models import Announcement, Organization, Team, Roles, City
 
 class AnnouncementFilter(django_filters.FilterSet):
     category = django_filters.ChoiceFilter(label='Wybierz kategorię',
                                            field_name='organization__category', 
                                            choices=Organization.ORGANIZATION_CATEGORY_CHOICES)
+    #TODO show only cities that are used in organizations                                    
+    city = django_filters.ModelChoiceFilter(label='Miasto', field_name='organization__city', queryset=City.objects.used_cities())
     # stack = django_filters.MultipleChoiceFilter(label='W jakich technologiach chcesz pracować',
     #                                     field_name='announcement__team__our_stack',
     #                                     choices=Team.TECHNOLOGIES_CHOICES)
@@ -15,9 +17,11 @@ class AnnouncementFilter(django_filters.FilterSet):
     #                                     choices=Roles.choices)
     # is_closed = django_filters.BooleanFilter(label='Czy grupa jest zamknięta',
     #                                     field_name='team__is_closed')
+
     class Meta:
         model = Announcement
         fields = ['category']   
+
 
 # class TeamFilter(django_filters.FilterSet):
 #     our_stack = 

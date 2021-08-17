@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from .managers import CustomAccountManager, AnnouncementQuerySetManager
+from .managers import CustomAccountManager, AnnouncementQuerySetManager, CityManager
 from django.contrib.postgres.fields import ArrayField
 from ckeditor.fields import RichTextField
 from django.contrib import admin
@@ -43,6 +43,8 @@ class Voivodeship(models.Model):
 
 
 class City(models.Model):
+    objects = CityManager()
+
     voivodeship = models.ForeignKey(Voivodeship, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, blank=False)
 

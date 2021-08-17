@@ -42,3 +42,11 @@ class AnnouncementQuerySetManager(models.QuerySet):
         if announcement is None:
             raise BadRequest('Invalid request.')
         return announcement
+
+
+class CityManager(models.Manager):
+    def used_cities(self):
+        from .models import Organization
+
+        ids = Organization.objects.filter(city__isnull=False).values_list('city', flat=True)
+        return self.filter(id__in=ids)
