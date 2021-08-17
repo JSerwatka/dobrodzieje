@@ -21,13 +21,15 @@
     <script>
         const regions = document.querySelectorAll('path.region');
         const voivodeshipInput = document.querySelector('.voivodeship-input-js');
-        //#TODO fix lack of selection after refresh
+        let previouslySelectedRegion = null;
         // If voivodeship quer param present (autoselection after refresh)
         //const voivodeshipQueryId = (new URL(document.location)).searchParams.get('voivodeship');
         //const voivodeshipQueryPath = document.getElementById(voivodeshipQueryId);
         //if (voivodeshipQueryPath) selectRegion(voivodeshipQueryPath);
         
-        function selectRegion() {
+        function selectRegion() {           
+            const alreadySelected = this.classList.contains('selected');
+
             // Clear all regions from selection
             regions.forEach(region => {
                 region.classList.remove('selected');
@@ -35,11 +37,17 @@
             // if voivodeshipPath from query params is present use it
             //const voivodeshipPath = voivodeshipQueryPath ? voivodeshipQueryPath : this
 
-            // Set the clicked region as selected
-            this.classList.add('selected');
+            // Allow to uncheck a region
+            if (!alreadySelected) {
+                // Set the clicked region as selected
+                this.classList.add('selected');
 
-            // Insert its id to the form input
-            voivodeshipInput.value = this.id;
+                // Insert its id to the form input
+                voivodeshipInput.value = this.id;
+            }
+            else {
+                voivodeshipInput.value = null;
+            }
         }
 
         regions.forEach(region => {
