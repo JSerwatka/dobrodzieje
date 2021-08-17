@@ -5,7 +5,7 @@
 
 
 {% block load_css %}
-     <link href="{% static 'chat/multi-select.css' %}" rel="stylesheet">
+     <link href="{% static 'css/multi-select.css' %}" rel="stylesheet">
 {% endblock load_css %}
 
 {% block content %}
@@ -13,7 +13,6 @@
         <form method="GET">
             {{ filter_announcements.form.category|as_crispy_field }}
             {{ filter_announcements.form.city|as_crispy_field }}
-            {% comment %} {{ filter_announcements.form.category|crispy }} {% endcomment %}
             <div>
                 {{ filter_announcements.form.stack.label_tag }}
                 {% render_field filter_announcements.form.stack|attr:"data-multi-select-plugin"%}
@@ -71,5 +70,5 @@
             region.addEventListener('click', selectRegion)
         })
     </script>
-    <script src="{% static 'chat/multi-select.js' %}"></script>
+    <script src="{% static 'js/multi-select.js' %}"></script>
 {% endblock %}

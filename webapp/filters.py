@@ -21,6 +21,8 @@ class AnnouncementFilter(django_filters.FilterSet):
                                                       lookup_expr='icontains',
                                                       choices=Roles.choices)
     #TODO make form fully cripsy - without widget tweaks
+    # TODO show only categories, stack, looking_for which are available??
+
     # stack = django_filters.MultipleChoiceFilter(label='W jakich technologiach chcesz pracować',
     #                                             field_name='team__our_stack',
     #                                             choices=Team.TECHNOLOGIES_CHOICES,
