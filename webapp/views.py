@@ -102,10 +102,12 @@ class AnnouncementDetails(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        #TODO why this works without knowing announcement id?
         is_author = Announcement.objects.is_author(self.request.user)
         context['is_author'] = is_author
         #TODO context['is_team'] -> allow to open group/with organization chat
         #TODO context['is_creator'] -> join group/create group and contact organization chat buttons
+        context['is_creator'] = self.request.user.is_creator
         context['navbar_active'] = 'my-announcement' if is_author else None
         return context
 

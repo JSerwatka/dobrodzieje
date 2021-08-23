@@ -9,6 +9,13 @@
                 <a class="btn btn-danger" href="{% url "webapp:announcement-delete" %}">Usuń Ogłoszenie</a>
             </div>
         {% endif %}
+        {% if is_creator %}
+            <form action="{% url "notifications_processing:join-announcement" %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="organization" value="{{ announcement.organization.user.id }}">
+                <button type="submit" class="btn btn-secondary" value="Zgłoś się do ogłoszenia">
+            </div>
+        {% endif %}
 
         {{announcement.organization}}
         {{announcement.content|safe}}

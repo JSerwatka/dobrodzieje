@@ -17,18 +17,19 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-import debug_toolbar
+import notifications.urls
 
-
-# app_name = "webapp"
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('webapp.urls')),
     path('chat/', include('chat.urls')),
-    path('notifications/', include('notifications.urls')),
+    path('notifications-processing/', include('notifications_processing.urls')),
+    path('inbox/notifications/', include('notifications.urls', namespace='notifications')),
 ]
 
 if settings.DEBUG:
+    import debug_toolbar
+
     urlpatterns.append(path('__debug__/', include(debug_toolbar.urls)))
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
