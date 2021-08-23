@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class NotificationsProcessingConfig(AppConfig):
+class NotificationsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'notifications_processing'
+    name = 'notifications'

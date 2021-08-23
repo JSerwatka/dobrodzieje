@@ -17,15 +17,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-import notifications.urls
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('webapp.urls')),
     path('chat/', include('chat.urls')),
-    path('notifications-processing/', include('notifications_processing.urls')),
-    path('inbox/notifications/', include('notifications.urls', namespace='notifications')),
+    path('notifications/', include('notifications.urls')),
 ]
 
 if settings.DEBUG:

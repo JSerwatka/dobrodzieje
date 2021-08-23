@@ -105,8 +105,13 @@ class AnnouncementDetails(DetailView):
         #TODO why this works without knowing announcement id?
         is_author = Announcement.objects.is_author(self.request.user)
         context['is_author'] = is_author
-        #TODO context['is_team'] -> allow to open group/with organization chat
-        #TODO context['is_creator'] -> join group/create group and contact organization chat buttons
+        #TODO - add creator state/type to context if is_creator
+        #       nothing -> join-announcement button
+        #       join-announcement send -> cancel join-announcement button
+        #       team closed -> show badge team closed
+        #       team open - join team button
+        #TODO context['is_team'] -> allow to open group/with organization chat ??? chyba niepotrzebne
+        #TODO context['is_creator'] -> check for (try) not logged in users
         context['is_creator'] = self.request.user.is_creator
         context['navbar_active'] = 'my-announcement' if is_author else None
         return context
