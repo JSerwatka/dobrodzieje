@@ -9,3 +9,19 @@ def show_notifications(context):
 	request_user = context['request'].user
 	notifications = Notification.objects.filter(recipient=request_user).order_by('-created_on')
 	return {'notifications': notifications}
+
+@register.simple_tag(takes_context=True)
+def join_request_send(context, join_request_type):
+	request_user = context['request'].user
+	notification_type = Notification.NotificationType.JOIN_REQUEST
+	if join_request_type == 'Announcement':
+		recipient = context['announcement'].organization.user
+	elif join_request_type == 'Team':
+		#TODO handle request to team
+		pass
+
+	return Notification.objects.filter(
+				sender=request_user, 
+				recipient=recipient, 
+				notification_type=notification_type
+			).exists()
