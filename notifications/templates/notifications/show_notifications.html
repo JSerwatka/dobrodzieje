@@ -6,10 +6,14 @@
 	<div class="dropdown-content" id="notification-container">
 		{% for notification in notifications %}
             <div class="dropdown-item-parent">
-                {{ notification.sender }} - 
-                {{ notification.recipient }} - 
-                {{ notification.message }} - 
-                {{ notification.notification_type }}
+                {% if notification.notification_type == 2 %}
+                    {% include 'notifications/partials/join_announcement_notification.html' with notification=notification %}
+                {% else %}
+                    {{ notification.sender }} - 
+                    {{ notification.recipient }} - 
+                    {{ notification.message }} - 
+                    {{ notification.notification_type }}
+                {% endif %}
             </div>
 			{% endfor %}
 		</div>

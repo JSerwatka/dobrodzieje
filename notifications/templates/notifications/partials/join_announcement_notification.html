@@ -1,0 +1,60 @@
+{{ notification.sender }} - 
+{{ notification.recipient }} - 
+{{ notification.message }} - 
+{{ notification.notification_type }}
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acceptRequestModal">
+  Akceptuj
+</button>
+<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectRequestModal">
+  Odrzuć
+</button>
+
+{% comment %} #TODO use one modal for all join reuqest notifications {% endcomment %}
+<!-- Modal Accept -->
+<div class="modal fade" id="rejectRequestModal" tabindex="-1" aria-labelledby="rejectRequestModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="rejectRequestModalLabel">Odrzuć użytkownika</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-dark">
+        Potwierdzając odrzucisz użytkownika od pracy nad Twoją stroną. Będzie on mógł jednak zgłosić się ponownie.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+        <form action="{% url 'notifications:join-announcement-rejection' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" value="{{ notification.sender.id }}" name="creator">
+            <button type="submit" class="btn btn-primary">Potwiedź</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Reject -->
+<div class="modal fade" id="acceptRequestModal" tabindex="-1" aria-labelledby="acceptRequestModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="acceptRequestModalLabel">Potwierdź użytkownika</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-dark">
+        Gdy potwierdzisz, użytkownik {{ notification.sender }} zacznie pracować nad Twoją stroną. Aby się z nim skontaktować wyślij do niego maila.
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+        <form action="{% url 'notifications:join-announcement-acceptance' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" value="{{ notification.sender.id }}" name="creator">
+            <button type="submit" class="btn btn-primary">Potwiedź</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
