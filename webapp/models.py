@@ -161,9 +161,9 @@ class Team(models.Model):
 class TeamMember(models.Model):
     creator = models.ForeignKey(Creator, on_delete=models.CASCADE)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
-    role = models.CharField(max_length=2, choices=Roles.choices, blank=True)
+    role = models.CharField(max_length=2, choices=Roles.choices, null=True)
     is_admin = models.BooleanField('is admin?', default=False)
-    nick = models.CharField(max_length=50)
+    nick = models.CharField(max_length=50, null=True)
     joined = models.BooleanField('user joined?', default=False)
 
     @admin.display(description='Creator')
