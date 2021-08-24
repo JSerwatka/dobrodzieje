@@ -1,0 +1,13 @@
+<div class="dropdown">
+	<span class="badge bg-primary notification-badge">{{ notifications.count }}</span>
+	<div class="dropdown-content" id="notification-container">
+		{% for notification in notifications %}
+            <div class="dropdown-item-parent">
+                {{ notification.sender }} - 
+                {{ notification.receiver }} - 
+                {{ notification.message }} - 
+                {{ notification.notification_type }}
+            </div>
+			{% endfor %}
+		</div>
+	</div>
