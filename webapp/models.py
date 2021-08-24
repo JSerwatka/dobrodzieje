@@ -36,7 +36,7 @@ class User(AbstractBaseUser,PermissionsMixin):
 
 
 class Voivodeship(models.Model):
-    name = models.CharField(max_length=255, blank=False, null=False)
+    name = models.CharField(max_length=255,  unique=True)
 
     def __str__(self):
         return self.name
@@ -46,11 +46,12 @@ class City(models.Model):
     objects = CityManager()
 
     voivodeship = models.ForeignKey(Voivodeship, on_delete=models.CASCADE)
-    name = models.CharField(max_length=255, blank=False)
+    name = models.CharField(max_length=255)
 
     class Meta:
         verbose_name_plural = 'Cities'
         ordering = ('name',)
+        unique_together = ['voivodeship', 'name']
 
     def __str__(self):
         return self.name
