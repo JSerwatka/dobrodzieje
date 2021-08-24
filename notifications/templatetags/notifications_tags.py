@@ -7,5 +7,5 @@ register = template.Library()
 @register.inclusion_tag('notifications/show_notifications.html', takes_context=True)
 def show_notifications(context):
 	request_user = context['request'].user
-	notifications = Notification.objects.filter(receiver=request_user).order_by('-created_on')
+	notifications = Notification.objects.filter(recipient=request_user).order_by('-created_on')
 	return {'notifications': notifications}
