@@ -11,6 +11,7 @@
                 <a class="btn btn-danger" href="{% url "webapp:announcement-delete" %}">Usuń Ogłoszenie</a>
             </div>
         {% endif %}
+        {% comment %} #TODO show only if team doesnt exist {% endcomment %}
         {% if is_creator and not join_request_send %}
             <form action="{% url "notifications:join-announcement" %}" method="POST">
                 {% csrf_token %}

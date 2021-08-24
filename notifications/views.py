@@ -5,6 +5,7 @@ from webapp.models import (
     Announcement,
     User,
     Team,
+    Creator,
     TeamMember
 )
 
@@ -61,19 +62,17 @@ class JoinAnnouncementAcceptance(View):
             return redirect(reverse_lazy('webapp:index'))
 
         # Create a new Team
-        Team.objects.create(
+        new_team = Team.objects.create(
             announcement=Announcement.objects.get(organization__user=organization)
         )
                                                            
-        
-        # Add the user as TeamMember admin 
-        # #TODO Do it when a creator first enters team
-        # #TODO create joined field in TeamMember model to check if he should go through setup??
-        # TeamMember.objects.create(
-        #     creator__user=creator,
-        #     team=new_team
-
-        # )
+        # Add the user as a TeamMember admin 
+        TeamMember.objects.create(
+            #TODO use related_name to grab creator from user
+            creator=Creator.objects.get(user=creator),
+            team=new_team,
+            is_admin=True
+        )
 
         # Delete all notifications of type JOIN_REQUEST
         Notification.objects.filter(recipient=organization, notification_type=notification_type).delete()
