@@ -3,5 +3,5 @@ from . import views
 
 app_name='notifications'
 urlpatterns = [
-    path('join-announcement', views.join_announcement, name='join-announcement'),
+    path('join-announcement', views.JoinAnnouncement.as_view(), name='join-announcement'),
 ]

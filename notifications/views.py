@@ -7,9 +7,9 @@ from .models import Notification
 from django.views.generic import View
 
 # Create your views here.
-def join_announcement(request):
+class JoinAnnouncement(View):
     #TODO add try except for icorrect data send by user
-    if request.method == 'POST':
+    def post(self, request, *args, **kwargs):
         sender = request.user
         recipient = User.objects.get(id=request.POST.get('organization'))
         notification_type = Notification.NotificationType.JOIN_REQUEST
