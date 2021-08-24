@@ -1,21 +1,30 @@
 {% extends 'layout.html' %}
 {% load crispy_forms_tags %}
+{% load notifications_tags %}
 
 {% block content %}
     <div class="container">
+        {% join_request_send join_request_type='Announcement' as join_request_send %}
         {% if is_author %}
             <div>
                 <a class="btn btn-secondary" href="{% url "webapp:announcement-edit" %}">Edytuj Ogłoszenie</a>
                 <a class="btn btn-danger" href="{% url "webapp:announcement-delete" %}">Usuń Ogłoszenie</a>
             </div>
         {% endif %}
-        {% if is_creator %}
+        {% if is_creator and not join_request_send %}
             <form action="{% url "notifications:join-announcement" %}" method="POST">
                 {% csrf_token %}
                 <input type="hidden" name="organization" value="{{ announcement.organization.user.id }}">
                 <input type="submit" class="btn btn-secondary" value="Zgłoś się do ogłoszenia">
             </div>
+        {% elif is_creator %}
+            <form action="{% url "notifications:cancel-join-announcement" %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="organization" value="{{ announcement.organization.user.id }}">
+                <input type="submit" class="btn btn-secondary" value="Wycofaj zgłoszenie do ogłoszenia">
+            </div>
         {% endif %}
+        
 
         {{announcement.organization}}
         {{announcement.content|safe}}
