@@ -93,7 +93,7 @@ class JoinAnnouncementAcceptance(View):
             sender = organization_user, 
             recipient = creator_user, 
             notification_type = Notification.NotificationType.JOIN_RESPONSE,
-            message = f'Gratulacje twoja prośba o dołączenie do ogłoszenia organizacji {organization_user.organization} została zaakcaptowana!',
+            message = f'Gratulacje twoja prośba o dołączenie do {organization_user.organization} została zaakcaptowana!',
             related_url = new_team.get_absolute_url()
         )
 
@@ -112,7 +112,31 @@ class JoinAnnouncementRejection(View):
     #TODO add try except for icorrect data send by user
     #TODO use superclass to make it DRY
     def post(self, request, *args, **kwargs):
-        sender = request.user
-        recipient = User.objects.get(id=request.POST.get('organization'))
+        # Get data from the form
+        organization_user = request.user
+        creator_user = User.objects.get(id=request.POST.get('creator'))
         notification_type = Notification.NotificationType.JOIN_REQUEST
+
+        # Check if join request from this user exists
+        try:
+            join_request_notif = Notification.objects.get(sender=creator_user, recipient=organization_user, notification_type=notification_type)
+        except Notification.DoesNotExist:
+            messages.error(
+                request, 
+                message='Ten użytkownik nie wysłał prośby.',
+                extra_tags='alert-danger'
+            )
+            return redirect(reverse_lazy('webapp:index'))
+
+        # Create notification that the user's request got rejected
+        Notification.objects.create(
+            sender = organization_user, 
+            recipient = creator_user, 
+            notification_type = Notification.NotificationType.JOIN_RESPONSE,
+            message = f'😢 Twoja prośba o dołączenie do {organization_user.organization} została odrzucona. Skontaktuj się z organizacją jeśli chcesz wyjaśnić sytuację',
+        )
+
+        # Delete this join request notification
+        join_request_notif.delete()
+
         return redirect(request.META.get('HTTP_REFERER'))
