@@ -1,15 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from .managers import (
-    CustomAccountManager, 
-    AnnouncementQuerySetManager, 
-    CityManager,
-    TeamManager
-)
 from django.contrib.postgres.fields import ArrayField
 from ckeditor.fields import RichTextField
 from django.contrib import admin
 from django.urls import reverse
+from .managers import (
+    CustomAccountManager, 
+    AnnouncementQuerySetManager, 
+    CityManager,
+    TeamMemberManager
+)
 
 
 # ===== Choices =====
@@ -117,7 +117,6 @@ class Announcement(models.Model):
 
 
 class Team(models.Model):
-    objects = TeamManager()
 
     TECHNOLOGIES_CHOICES = [
         ('PY', 'python'),
@@ -165,6 +164,8 @@ class Team(models.Model):
 
 # Jak używać many to many https://youtu.be/-HuTlmEVOgU?t=890
 class TeamMember(models.Model):
+    objects = TeamMemberManager()
+
     creator = models.ForeignKey(Creator, on_delete=models.CASCADE)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     role = models.CharField(max_length=2, choices=Roles.choices, null=True)

@@ -62,18 +62,16 @@ class JoinAnnouncementAcceptance(View):
             return redirect(reverse_lazy('webapp:index'))
 
         # Create a new Team
-        new_team = Team.objects.create_from_organization_user(organization_user=organization_user)
-        # new_team = Team.objects.create(
-        #     announcement=Announcement.objects.get(organization__user=organization)
-        # )
+        new_team = Team.objects.create(
+            announcement=Announcement.objects.get(organization__user=organization_user)
+        )
                                                            
         # Add the user as a TeamMember admin 
-        # TeamMember.objects.create(
-        #     #TODO use related_name to grab creator from user
-        #     creator=Creator.objects.get(user=creator_user),
-        #     team=new_team,
-        #     is_admin=True
-        # )
+        TeamMember.objects.create_from_creator_user(
+            creator_user=creator_user,
+            team=new_team,
+            is_admin=True
+        )
 
         # Delete all notifications of type JOIN_REQUEST
         # Notification.objects.filter(recipient=organization_user, notification_type=notification_type).delete()
