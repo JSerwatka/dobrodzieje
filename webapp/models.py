@@ -1,6 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from .managers import CustomAccountManager, AnnouncementQuerySetManager, CityManager
+from .managers import (
+    CustomAccountManager, 
+    AnnouncementQuerySetManager, 
+    CityManager,
+    TeamManager
+)
 from django.contrib.postgres.fields import ArrayField
 from ckeditor.fields import RichTextField
 from django.contrib import admin
@@ -112,6 +117,7 @@ class Announcement(models.Model):
 
 
 class Team(models.Model):
+    objects = TeamManager()
 
     TECHNOLOGIES_CHOICES = [
         ('PY', 'python'),

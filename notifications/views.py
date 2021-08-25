@@ -46,13 +46,13 @@ class JoinAnnouncementAcceptance(View):
     #TODO use superclass to make it DRY
     def post(self, request, *args, **kwargs):
         # Get data from the form
-        organization = request.user
-        creator = User.objects.get(id=request.POST.get('creator'))
+        organization_user = request.user
+        creator_user = User.objects.get(id=request.POST.get('creator'))
         notification_type = Notification.NotificationType.JOIN_REQUEST
 
         # Check if join request from this user exists
         try:
-            Notification.objects.get(sender=creator, recipient=organization, notification_type=notification_type)
+            Notification.objects.get(sender=creator_user, recipient=organization_user, notification_type=notification_type)
         except Notification.DoesNotExist:
             messages.error(
                 request, 
@@ -62,28 +62,29 @@ class JoinAnnouncementAcceptance(View):
             return redirect(reverse_lazy('webapp:index'))
 
         # Create a new Team
-        new_team = Team.objects.create(
-            announcement=Announcement.objects.get(organization__user=organization)
-        )
+        new_team = Team.objects.create_from_organization_user(organization_user=organization_user)
+        # new_team = Team.objects.create(
+        #     announcement=Announcement.objects.get(organization__user=organization)
+        # )
                                                            
         # Add the user as a TeamMember admin 
-        TeamMember.objects.create(
-            #TODO use related_name to grab creator from user
-            creator=Creator.objects.get(user=creator),
-            team=new_team,
-            is_admin=True
-        )
+        # TeamMember.objects.create(
+        #     #TODO use related_name to grab creator from user
+        #     creator=Creator.objects.get(user=creator_user),
+        #     team=new_team,
+        #     is_admin=True
+        # )
 
         # Delete all notifications of type JOIN_REQUEST
-        Notification.objects.filter(recipient=organization, notification_type=notification_type).delete()
+        # Notification.objects.filter(recipient=organization_user, notification_type=notification_type).delete()
         
         # Create notification that users request got accepted
-        Notification.objects.create(
-            sender=organization, 
-            recipient=creator, 
-            notification_type=Notification.NotificationType.JOIN_RESPONSE,
-            #TODO add url to the team chat
-        )
+        # Notification.objects.create(
+        #     sender=organization_user, 
+        #     recipient=creator_user, 
+        #     notification_type=Notification.NotificationType.JOIN_RESPONSE,
+        #     #TODO add url to the team chat
+        # )
         
         # Redirect to the announcement
         return redirect(request.META.get('HTTP_REFERER'))  #TODO change to announcement   
