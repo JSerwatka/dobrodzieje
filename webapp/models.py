@@ -7,8 +7,7 @@ from django.urls import reverse
 from .managers import (
     CustomAccountManager, 
     AnnouncementQuerySetManager, 
-    CityManager,
-    TeamMemberManager
+    CityManager
 )
 
 
@@ -75,7 +74,7 @@ class Organization(models.Model):
         ('OSiPZ', 'Ochorna środowiska i praw zwierząt')
     ]
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='organization')
     name = models.CharField('organization\'s name', max_length=255, unique=True)
     category = models.CharField(max_length=10, choices=ORGANIZATION_CATEGORY_CHOICES)
     phone_number = models.CharField('phone number', max_length=9, blank=True, null=True)
@@ -89,7 +88,7 @@ class Organization(models.Model):
 
 
 class Creator(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='creator')
     first_name = models.CharField('first name', max_length=150, blank=True, null=True)
     last_name = models.CharField('last name', max_length=150, blank=True, null=True)
 
@@ -167,8 +166,6 @@ class Team(models.Model):
 
 # Jak używać many to many https://youtu.be/-HuTlmEVOgU?t=890
 class TeamMember(models.Model):
-    objects = TeamMemberManager()
-
     creator = models.ForeignKey(Creator, on_delete=models.CASCADE)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     role = models.CharField(max_length=2, choices=Roles.choices, null=True)
