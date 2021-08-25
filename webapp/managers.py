@@ -44,15 +44,6 @@ class AnnouncementQuerySetManager(models.QuerySet):
         return announcement
 
 
-class TeamMemberManager(models.Manager):
-    def create_from_creator_user(self, creator_user, *args, **kwargs):
-        from .models import Creator
-
-        creator = Creator.objects.get(user=creator_user)
-        team_member = self.create(creator=creator, *args, **kwargs)
-        return team_member
-
-
 class CityManager(models.Manager):   
     def used_cities(self):
         from .models import Organization
