@@ -4,7 +4,6 @@ from .models import Message
 from webapp.models import Team
 
 """
-#TODO get users as actors (create creator manager method)
 #TODO set proper message and description
 @receiver(post_save, sender=Message)
 def message_post_save(sender, instance, created, *args, **kwargs):
