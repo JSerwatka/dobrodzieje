@@ -4,20 +4,20 @@
 {{ notification.notification_type }}
 
 <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acceptRequestModal">
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acceptRequestModal-{{ notification.sender.id }}">
   Akceptuj
 </button>
-<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectRequestModal">
+<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectRequestModal-{{ notification.sender.id }}">
   Odrzuć
 </button>
 
 {% comment %} #TODO use one modal for all join reuqest notifications {% endcomment %}
 <!-- Modal Accept -->
-<div class="modal fade" id="rejectRequestModal" tabindex="-1" aria-labelledby="rejectRequestModalLabel" aria-hidden="true">
+<div class="modal fade" id="rejectRequestModal-{{ notification.sender.id }}" tabindex="-1" aria-labelledby="rejectRequestModalLabel-{{ notification.sender.id }}" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="rejectRequestModalLabel">Odrzuć użytkownika</h5>
+        <h5 class="modal-title" id="rejectRequestModalLabel-{{ notification.sender.id }}">Odrzuć użytkownika</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body text-dark">
@@ -36,11 +36,11 @@
 </div>
 
 <!-- Modal Reject -->
-<div class="modal fade" id="acceptRequestModal" tabindex="-1" aria-labelledby="acceptRequestModalLabel" aria-hidden="true">
+<div class="modal fade" id="acceptRequestModal-{{ notification.sender.id }}" tabindex="-1" aria-labelledby="acceptRequestModalLabel-{{ notification.sender.id }}" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="acceptRequestModalLabel">Potwierdź użytkownika</h5>
+        <h5 class="modal-title" id="acceptRequestModalLabel-{{ notification.sender.id }}">Potwierdź użytkownika</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body text-dark">
