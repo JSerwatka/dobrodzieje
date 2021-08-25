@@ -161,6 +161,9 @@ class Team(models.Model):
     def __str__(self):
         return f'Team for {self.announcement}'
 
+    def get_absolute_url(self):
+        return reverse("chat:team-chat", kwargs={"team_id": self.id})
+
 
 # Jak używać many to many https://youtu.be/-HuTlmEVOgU?t=890
 class TeamMember(models.Model):
