@@ -1,6 +1,6 @@
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
-from .models import Team
+from .models import Announcement, Team
 from notifications.models import Notification
 
 @receiver(pre_delete, sender=Team)
@@ -16,3 +16,18 @@ def team_pre_delete(sender, instance, *args, **kwargs):
             notification_type = Notification.NotificationType.DELETION,
             message = f'Twoja drużyna do organizacji {organization} została usunięta'
         )
+    
+@receiver(pre_delete, sender=Announcement)
+def announcement_pre_delete(sender, instance, *args, **kwargs):
+    # Check if the announcement has a team
+    if hasattr(instance, 'team'):
+        team_members = instance.team.members.all()
+        organization = instance.organization
+
+        for creator in team_members:
+            Notification.objects.create(
+                sender = organization.user,
+                recipient = creator.user, 
+                notification_type = Notification.NotificationType.DELETION,
+                message = f'Ogłoszenie organizacji {organization} zostało usunięte'
+            )
