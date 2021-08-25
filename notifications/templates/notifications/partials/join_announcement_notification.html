@@ -4,57 +4,34 @@
 {{ notification.notification_type }}
 
 <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acceptRequestModal-{{ notification.sender.id }}">
+<button type="button" 
+        class="btn btn-primary js-accept-request" 
+        data-bs-toggle="modal" 
+        data-bs-target="#acceptRequestModal" 
+        data-sender-id="{{ notification.sender.id }}"
+        data-sender-email="{{ notification.sender }}"
+        data-join-request-type="{{ notification.get_notification_type_display }}"
+        data-form-url="
+          {% if notification.get_notification_type_display == 'Join Announcement Request' %}
+            {% url 'notifications:join-announcement-acceptance' %}
+          {% else %}
+            {% url 'notifications:join-team-acceptance' %}
+          {% endif %}">
   Akceptuj
 </button>
-<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectRequestModal-{{ notification.sender.id }}">
+<button type="button" 
+        class="btn btn-danger js-reject-request" 
+        data-bs-toggle="modal" 
+        data-bs-target="#rejectRequestModal"
+        data-sender-id="{{ notification.sender.id }}"
+        data-sender-email="{{ notification.sender }}"
+        data-join-request-type="{{ notification.get_notification_type_display }}"
+        data-form-url="
+          {% if notification.get_notification_type_display == 'Join Announcement Request' %}
+            {% url 'notifications:join-announcement-rejection' %}
+          {% else %}
+            {% url 'notifications:join-team-rejection' %}
+          {% endif %}">
+
   Odrzuć
 </button>
-
-{% comment %} #TODO use one modal for all join reuqest notifications {% endcomment %}
-<!-- Modal Accept -->
-<div class="modal fade" id="rejectRequestModal-{{ notification.sender.id }}" tabindex="-1" aria-labelledby="rejectRequestModalLabel-{{ notification.sender.id }}" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="rejectRequestModalLabel-{{ notification.sender.id }}">Odrzuć użytkownika</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body text-dark">
-        Potwierdzając odrzucisz użytkownika od pracy nad Twoją stroną. Będzie on mógł jednak zgłosić się ponownie.
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
-        <form action="{% url 'notifications:join-announcement-rejection' %}" method="POST">
-            {% csrf_token %}
-            <input type="hidden" value="{{ notification.sender.id }}" name="creator">
-            <button type="submit" class="btn btn-primary">Potwiedź</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Reject -->
-<div class="modal fade" id="acceptRequestModal-{{ notification.sender.id }}" tabindex="-1" aria-labelledby="acceptRequestModalLabel-{{ notification.sender.id }}" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="acceptRequestModalLabel-{{ notification.sender.id }}">Potwierdź użytkownika</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body text-dark">
-        Gdy potwierdzisz, użytkownik {{ notification.sender }} zacznie pracować nad Twoją stroną. Aby się z nim skontaktować wyślij do niego maila.
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
-        <form action="{% url 'notifications:join-announcement-acceptance' %}" method="POST">
-            {% csrf_token %}
-            <input type="hidden" value="{{ notification.sender.id }}" name="creator">
-            <button type="submit" class="btn btn-primary">Potwiedź</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
