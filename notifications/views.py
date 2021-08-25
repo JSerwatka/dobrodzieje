@@ -62,8 +62,9 @@ class JoinAnnouncementAcceptance(View):
             return redirect(reverse_lazy('webapp:index'))
 
         # Create a new Team
+        organization_announcement = Announcement.objects.get(organization__user=organization_user)
         new_team = Team.objects.create(
-            announcement = Announcement.objects.get(organization__user=organization_user)
+            announcement = organization_announcement
         )
                                                            
         # Add the user as a TeamMember admin 
@@ -81,7 +82,7 @@ class JoinAnnouncementAcceptance(View):
                 sender = organization_user, 
                 recipient = join_request.sender, 
                 notification_type = Notification.NotificationType.JOIN_RESPONSE,
-                message = 'Agh! Inne zgłoszenie zostało już przyjęte do tego ogłoszenia. Spróbuje gdzie indziej i nie trać zapału!'
+                message = 'Argh! Inne zgłoszenie zostało już przyjęte do tego ogłoszenia. Spróbuje gdzie indziej i nie trać zapału!'
             )
 
         # Delete all join request notifications
@@ -96,10 +97,15 @@ class JoinAnnouncementAcceptance(View):
             related_url = new_team.get_absolute_url()
         )
 
-        #TODO add message that the user is working on your website
+        # Add message that the user is working on your website
+        messages.info(
+            request, 
+            message='Gratulacje! Twoja strona już się tworzy!',
+            extra_tags='alert-success'
+        )
         
         # Redirect to the announcement
-        return redirect(request.META.get('HTTP_REFERER'))  #TODO change to announcement   
+        return redirect(organization_announcement.get_absolute_url())
 
 
 class JoinAnnouncementRejection(View):
