@@ -19,7 +19,7 @@ class JoinAnnouncement(View):
     def post(self, request, *args, **kwargs):
         sender = request.user
         recipient = User.objects.get(id=request.POST.get('organization'))
-        notification_type = Notification.NotificationType.JOIN_REQUEST
+        notification_type = Notification.NotificationType.JOIN_ANNOUNCEMENT_REQUEST
         message = 'chce pracować nad Twoją nową stroną'
         Notification.objects.create(
             sender = sender,
@@ -36,7 +36,7 @@ class CancelJoinAnnouncement(View):
     def post(self, request, *args, **kwargs):
         sender = request.user
         recipient = User.objects.get(id=request.POST.get('organization'))
-        notification_type = Notification.NotificationType.JOIN_REQUEST
+        notification_type = Notification.NotificationType.JOIN_ANNOUNCEMENT_REQUEST
         Notification.objects.get(sender=sender, recipient=recipient, notification_type=notification_type).delete()
         return redirect(request.META.get('HTTP_REFERER'))
 
@@ -48,7 +48,7 @@ class JoinAnnouncementAcceptance(View):
         # Get data from the form
         organization_user = request.user
         creator_user = User.objects.get(id=request.POST.get('creator'))
-        notification_type = Notification.NotificationType.JOIN_REQUEST
+        notification_type = Notification.NotificationType.JOIN_ANNOUNCEMENT_REQUEST
 
         # Check if join request from this user exists
         try:
@@ -115,7 +115,7 @@ class JoinAnnouncementRejection(View):
         # Get data from the form
         organization_user = request.user
         creator_user = User.objects.get(id=request.POST.get('creator'))
-        notification_type = Notification.NotificationType.JOIN_REQUEST
+        notification_type = Notification.NotificationType.JOIN_ANNOUNCEMENT_REQUEST
 
         # Check if join request from this user exists
         try:

@@ -5,9 +5,10 @@ from webapp.models import User
 class Notification(models.Model):
     class NotificationType(models.IntegerChoices):
         NEW_MESSAGE = 1, 'New Message'
-        JOIN_REQUEST = 2, 'Join Request'
-        JOIN_RESPONSE = 3, 'Join Response'
-        DELETION = 4, 'Deletion'
+        JOIN_ANNOUNCEMENT_REQUEST = 2, 'Join Announcement Request'
+        JOIN_TEAM_REQUEST = 3, 'Join Team Request'
+        JOIN_RESPONSE = 4, 'Join Response'
+        DELETION = 5, 'Deletion'
 
 
     notification_type = models.IntegerField(choices=NotificationType.choices)
