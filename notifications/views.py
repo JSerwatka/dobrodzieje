@@ -62,38 +62,41 @@ class JoinAnnouncementAcceptance(View):
             return redirect(reverse_lazy('webapp:index'))
 
         # Create a new Team
-        # new_team = Team.objects.create(
-        #     announcement=Announcement.objects.get(organization__user=organization_user)
-        # )
+        new_team = Team.objects.create(
+            announcement = Announcement.objects.get(organization__user=organization_user)
+        )
                                                            
         # Add the user as a TeamMember admin 
-        # TeamMember.objects.create_from_creator_user(
-        #     creator_user=creator_user,
-        #     team=new_team,
-        #     is_admin=True
-        # )
+        TeamMember.objects.create(
+            creator = creator_user.creator,
+            team = new_team,
+            is_admin = True
+        )
 
         # Notify all rejected users
-        # all_join_requests = Notification.objects.filter(recipient=organization_user, notification_type=notification_type)
-        # join_requests_rejected = all_join_requests.exclude(sender=creator_user)
-        # for join_request in join_requests_rejected:
-        #     Notification.objects.create(
-        #         sender=organization_user, 
-        #         recipient=join_request.sender, 
-        #         notification_type=Notification.NotificationType.JOIN_RESPONSE,
-        #         message = 'Agh! Inne zgłoszenie zostało już przyjęte do tego ogłoszenia. Spróbuje gdzie indziej i nie trać zapału!'
-        #     )
+        all_join_requests = Notification.objects.filter(recipient=organization_user, notification_type=notification_type)
+        join_requests_rejected = all_join_requests.exclude(sender=creator_user)
+        for join_request in join_requests_rejected:
+            Notification.objects.create(
+                sender = organization_user, 
+                recipient = join_request.sender, 
+                notification_type = Notification.NotificationType.JOIN_RESPONSE,
+                message = 'Agh! Inne zgłoszenie zostało już przyjęte do tego ogłoszenia. Spróbuje gdzie indziej i nie trać zapału!'
+            )
 
         # Delete all join request notifications
-        # all_join_requests.delete()
+        all_join_requests.delete()
         
         # Create notification that the user's request got accepted
-        # Notification.objects.create(
-        #     sender=organization_user, 
-        #     recipient=creator_user, 
-        #     notification_type=Notification.NotificationType.JOIN_RESPONSE,
-        #     #TODO add url to the team chat
-        # )
+        Notification.objects.create(
+            sender = organization_user, 
+            recipient = creator_user, 
+            notification_type = Notification.NotificationType.JOIN_RESPONSE,
+            message = f'Gratulacje twoja prośba o dołączenie do ogłoszenia organizacji {organization_user.organization} została zaakcaptowana!',
+            related_url = new_team.get_absolute_url()
+        )
+
+        #TODO add message that the user is working on your website
         
         # Redirect to the announcement
         return redirect(request.META.get('HTTP_REFERER'))  #TODO change to announcement   
