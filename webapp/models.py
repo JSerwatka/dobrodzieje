@@ -163,6 +163,9 @@ class Team(models.Model):
     def get_absolute_url(self):
         return reverse("chat:team-chat", kwargs={"team_id": self.id})
 
+    def get_admin(self):
+        return self.teammember_set.get(is_admin=True).creator.user
+
 
 # Jak używać many to many https://youtu.be/-HuTlmEVOgU?t=890
 class TeamMember(models.Model):
