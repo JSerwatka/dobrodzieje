@@ -183,10 +183,3 @@ class TeamMember(models.Model):
 
     class Meta:
         unique_together = ['creator', 'team']
-
-
-
-
-
-
-#TODO Notifications model
