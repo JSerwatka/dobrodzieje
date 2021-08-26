@@ -1,0 +1,18 @@
+{% load notifications_tags %}
+
+
+{% join_request_send join_request_type='Announcement' as join_announcement_request_send %}
+
+{% if not join_announcement_request_send %}
+    <form action="{% url "notifications:join-announcement" %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="organization" value="{{ organization_id }}">
+        <input type="submit" class="btn btn-secondary" value="Zgłoś się do ogłoszenia">
+    </div>
+{% else %}
+    <form action="{% url "notifications:cancel-join-announcement" %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="organization" value="{{ organization_id }}">
+        <input type="submit" class="btn btn-secondary" value="Wycofaj zgłoszenie do ogłoszenia">
+    </div>
+{% endif %}

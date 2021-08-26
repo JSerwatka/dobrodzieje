@@ -1,7 +1,5 @@
 {% extends 'layout.html' %}
 {% load crispy_forms_tags %}
-{% load notifications_tags %}
-{% load custom_tags %}
 
 {% block content %}
     <div class="container">
@@ -12,42 +10,14 @@
             </div>
         {% endif %}
         {% if is_creator %}
-            {% join_request_send join_request_type='Announcement' as join_announcement_request_send %}
             {% if announcemenet_state == 'no team' %}
-                {% if not join_announcement_request_send %}
-                    <form action="{% url "notifications:join-announcement" %}" method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" name="organization" value="{{ announcement.organization.user.id }}">
-                        <input type="submit" class="btn btn-secondary" value="Zgłoś się do ogłoszenia">
-                    </div>
-                {% else %}
-                    <form action="{% url "notifications:cancel-join-announcement" %}" method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" name="organization" value="{{ announcement.organization.user.id }}">
-                        <input type="submit" class="btn btn-secondary" value="Wycofaj zgłoszenie do ogłoszenia">
-                    </div>
-                {% endif %}
+                {% include 'webapp/partials/detail_no_team.html' with organization_id=announcement.organization.user.id %}
             {% elif announcemenet_state == 'team opened' %}
-                {% join_request_send join_request_type='Team' as join_team_request_send %}
-                {% get_arrayfield_display team arrayfield='our_stack' as our_stack%}
-                {% get_arrayfield_display team arrayfield='looking_for' as looking_for%}
-
-                <div>Our stack: {{ our_stack }}</div>
-                <div>Looking for: {{ looking_for }}</div>
-                {% comment %} #TODO show badge team opened + stack + looking for {% endcomment %}
-                  {% if not join_team_request_send %}
-                    {% comment %} #TODO join team button {% endcomment %}
-                    <div>Team opened - request not send</div>
-                {% else %}
-                    {% comment %} #TODO cancel join team button {% endcomment %}
-                    <div>Team opened - request send</div>
-                {% endif %}
+                {% include 'webapp/partials/detail_team_opened.html' with team=team organization_id=announcement.organization.user.id %}
             {% elif announcemenet_state == 'team closed' %}
-                {% comment %} #TODO show badge team closed {% endcomment %}
-                <div>Team Closed</div>
+                {% include 'webapp/partials/detail_team_closed.html' %}
             {% elif announcemenet_state == 'team member' %}
-                {% comment %} #TODO show badge - your team {% endcomment %}
-                <div>Team member</div>
+                {% include 'webapp/partials/detail_team_member.html' %}
             {% endif %}
         
         {% endif %}       

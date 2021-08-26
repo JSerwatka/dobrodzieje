@@ -155,7 +155,6 @@ class Team(models.Model):
         blank=True, 
         null=True
     )
-    #TODO chat foreign key (potrzebny?)
 
     def __str__(self):
         return f'Team for {self.announcement}'
