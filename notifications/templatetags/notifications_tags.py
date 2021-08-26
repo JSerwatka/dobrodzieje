@@ -13,11 +13,12 @@ def show_notifications(context):
 @register.simple_tag(takes_context=True)
 def join_request_send(context, join_request_type):
 	request_user = context['request'].user
-	notification_type = Notification.NotificationType.JOIN_REQUEST
 	if join_request_type == 'Announcement':
+		notification_type = Notification.NotificationType.JOIN_ANNOUNCEMENT_REQUEST
 		recipient = context['announcement'].organization.user
 	elif join_request_type == 'Team':
-		#TODO handle request to team
+		recipient = context['team'].get_admin()
+		notification_type = Notification.NotificationType.JOIN_TEAM_REQUEST
 		pass
 
 	return Notification.objects.filter(
