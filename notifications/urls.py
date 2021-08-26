@@ -7,4 +7,6 @@ urlpatterns = [
     path('cancel-join-announcement', views.CancelJoinAnnouncement.as_view(), name='cancel-join-announcement'),
     path('join-announcement-rejection', views.JoinAnnouncementRejection.as_view(), name='join-announcement-rejection'),
     path('join-announcement-acceptance', views.JoinAnnouncementAcceptance.as_view(), name='join-announcement-acceptance'),
+    path('join-team', views.JoinTeam.as_view(), name='join-team'),
+    path('cancel-join-team', views.CancelJoinTeam.as_view(), name='cancel-join-team'),
 ]
