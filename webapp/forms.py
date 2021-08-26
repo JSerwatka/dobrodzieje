@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from ckeditor.widgets import CKEditorWidget
 from django.forms import widgets
-from .models import Announcement, User, Organization, Creator, City
+from .models import Announcement, Team, User, Organization, Creator, City, Roles
 from django.db import transaction
 
 class OrganizationFieldsMixin(forms.ModelForm):
@@ -115,3 +115,16 @@ class CreatorEditForm(forms.ModelForm):
     class Meta:
         model = Creator
         fields = ['first_name', 'last_name']
+
+
+class TeamJoinForm(forms.ModelForm):
+    class Meta:
+        model = Team
+        fields = ['looking_for']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        team = kwargs['instance']
+        # Show only roles that are looked for by the team
+        limited_choices = [(role_key, role_value) for (role_key, role_value) in Roles.choices if role_key in team.looking_for]
+        self.fields['looking_for'] = forms.ChoiceField(label='Wybierz rolę', choices=limited_choices)

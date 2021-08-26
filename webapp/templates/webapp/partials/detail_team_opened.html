@@ -1,3 +1,4 @@
+{% load crispy_forms_tags %}
 {% load notifications_tags %}
 {% load custom_tags %}
 
@@ -12,13 +13,7 @@
     {% if not join_team_request_send %}
     <form action="{% url "notifications:join-team" %}" method="POST">
         {% csrf_token %}
-        {% comment %} #TODO add info for what role is he requesting {% endcomment %}
-        <select class="form-select" aria-label="Wybierz rolę">
-            <option selected>Wybierz rolę</option>
-            {% for role in looking_for %}
-                <option value=1>{{ role }}</option>
-            {% endfor %}
-        </select>
+        {{looking_for_form|crispy}}
         <input type="hidden" name="organization" value="{{ organization_id }}">
         <input type="hidden" name="team" value="{{ team.id }}">
         <input type="submit" class="btn btn-secondary" value="Zgłoś się do drużyny">

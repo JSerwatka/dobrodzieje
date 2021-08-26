@@ -30,7 +30,8 @@ from .forms import (
     CreatorRegisterForm,
     AnnouncementForm,
     OrganizationEditForm,
-    CreatorEditForm
+    CreatorEditForm,
+    TeamJoinForm
 )
 
 from .filters import (
@@ -108,6 +109,8 @@ class AnnouncementDetails(DetailView):
         #TODO context['is_creator'] -> check for (try) not logged in users
         context['is_creator'] = self.request.user.is_creator
         context.update(self.get_announcement_state())
+        if context['announcemenet_state'] == 'team opened':
+            context['looking_for_form'] = TeamJoinForm(instance=context['team'])
         context['navbar_active'] = 'my-announcement' if is_author else None
         return context
 

@@ -1,5 +1,4 @@
 {% extends 'layout.html' %}
-{% load crispy_forms_tags %}
 
 {% block content %}
     <div class="container">
@@ -13,7 +12,7 @@
             {% if announcemenet_state == 'no team' %}
                 {% include 'webapp/partials/detail_no_team.html' with organization_id=announcement.organization.user.id %}
             {% elif announcemenet_state == 'team opened' %}
-                {% include 'webapp/partials/detail_team_opened.html' with team=team organization_id=announcement.organization.user.id %}
+                {% include 'webapp/partials/detail_team_opened.html' with team=team organization_id=announcement.organization.user.id looking_for_form=looking_for_form%}
             {% elif announcemenet_state == 'team closed' %}
                 {% include 'webapp/partials/detail_team_closed.html' %}
             {% elif announcemenet_state == 'team member' %}
