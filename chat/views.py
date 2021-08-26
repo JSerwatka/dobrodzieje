@@ -35,10 +35,8 @@ def team_chat(request, team_id):
         return redirect(reverse_lazy('webapp:index'))
     
     members = team.teammember_set.select_related('creator__user')
-    # members = team.teammember_set.all()
-    current_user_admin = members.filter(creator__user=request.user).first().is_admin
+    current_user_admin = members.get(creator__user=request.user).is_admin
     organization = team.announcement.organization
-    #TODO settings - delete group, open/close, add looking_for, add stack
 
     return render(request, 'chat/chatroom.html', {
         'team_id': team_id,
