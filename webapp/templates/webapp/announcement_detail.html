@@ -1,31 +1,56 @@
 {% extends 'layout.html' %}
 {% load crispy_forms_tags %}
 {% load notifications_tags %}
+{% load custom_tags %}
 
 {% block content %}
     <div class="container">
-        {% join_request_send join_request_type='Announcement' as join_request_send %}
         {% if is_author %}
             <div>
                 <a class="btn btn-secondary" href="{% url "webapp:announcement-edit" %}">Edytuj Ogłoszenie</a>
                 <a class="btn btn-danger" href="{% url "webapp:announcement-delete" %}">Usuń Ogłoszenie</a>
             </div>
         {% endif %}
-        {% comment %} #TODO show only if team doesnt exist {% endcomment %}
-        {% if is_creator and not join_request_send %}
-            <form action="{% url "notifications:join-announcement" %}" method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="organization" value="{{ announcement.organization.user.id }}">
-                <input type="submit" class="btn btn-secondary" value="Zgłoś się do ogłoszenia">
-            </div>
-        {% elif is_creator %}
-            <form action="{% url "notifications:cancel-join-announcement" %}" method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="organization" value="{{ announcement.organization.user.id }}">
-                <input type="submit" class="btn btn-secondary" value="Wycofaj zgłoszenie do ogłoszenia">
-            </div>
-        {% endif %}
+        {% if is_creator %}
+            {% join_request_send join_request_type='Announcement' as join_announcement_request_send %}
+            {% if announcemenet_state == 'no team' %}
+                {% if not join_announcement_request_send %}
+                    <form action="{% url "notifications:join-announcement" %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="organization" value="{{ announcement.organization.user.id }}">
+                        <input type="submit" class="btn btn-secondary" value="Zgłoś się do ogłoszenia">
+                    </div>
+                {% else %}
+                    <form action="{% url "notifications:cancel-join-announcement" %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="organization" value="{{ announcement.organization.user.id }}">
+                        <input type="submit" class="btn btn-secondary" value="Wycofaj zgłoszenie do ogłoszenia">
+                    </div>
+                {% endif %}
+            {% elif announcemenet_state == 'team opened' %}
+                {% join_request_send join_request_type='Team' as join_team_request_send %}
+                {% get_arrayfield_display team arrayfield='our_stack' as our_stack%}
+                {% get_arrayfield_display team arrayfield='looking_for' as looking_for%}
+
+                <div>Our stack: {{ our_stack }}</div>
+                <div>Looking for: {{ looking_for }}</div>
+                {% comment %} #TODO show badge team opened + stack + looking for {% endcomment %}
+                  {% if not join_team_request_send %}
+                    {% comment %} #TODO join team button {% endcomment %}
+                    <div>Team opened - request not send</div>
+                {% else %}
+                    {% comment %} #TODO cancel join team button {% endcomment %}
+                    <div>Team opened - request send</div>
+                {% endif %}
+            {% elif announcemenet_state == 'team closed' %}
+                {% comment %} #TODO show badge team closed {% endcomment %}
+                <div>Team Closed</div>
+            {% elif announcemenet_state == 'team member' %}
+                {% comment %} #TODO show badge - your team {% endcomment %}
+                <div>Team member</div>
+            {% endif %}
         
+        {% endif %}       
 
         {{announcement.organization}}
         {{announcement.content|safe}}
