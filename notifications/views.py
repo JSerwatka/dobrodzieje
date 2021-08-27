@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.contrib import messages
+from django.utils.html import format_html
 from webapp.models import (
     Announcement,
     Organization,
@@ -126,7 +127,7 @@ class JoinAnnouncementRejection(View):
         except Notification.DoesNotExist:
             messages.error(
                 request, 
-                message='Ten użytkownik nie wysłał prośby.',
+                message='Ten użytkownik nie wysłał prośby',
                 extra_tags='alert-danger'
             )
             return redirect(reverse_lazy('webapp:index'))
@@ -149,26 +150,30 @@ class JoinTeam(View):
     #TODO use superclass to make it DRY
     def post(self, request, *args, **kwargs):
         form_data = request.POST
+        role_value = form_data['looking_for']
         
         # Confirm that the team is opened and is looking for this role
         team = get_object_or_404(
                     Team,
                     id = form_data['team_id'],
                     is_closed = False,
-                    looking_for__contains = [form_data['looking_for']]
+                    looking_for__contains = [role_value]
                 )
 
         #TODO handle with correct reponse status
         # Get data for the notification's message
         organization = get_object_or_404(Organization, user__id=form_data['organization'])
-        role = Roles.get_labels_by_values(form_data['looking_for'])[0]
+        role_name = Roles.get_labels_by_values(role_value)[0]
 
         # Gather all the data and send notification to the team's admin
         sender = request.user
         recipient = team.get_admin()
         notification_type = Notification.NotificationType.JOIN_TEAM_REQUEST
-        message = f'chce dołączyć do drużyny dla {organization} na stanowisko {role}'
-        extra_data = {'team_id': team.id}
+        message = f'chce dołączyć do drużyny dla {organization} na stanowisko {role_name}'
+        extra_data = {'team_id': team.id, 
+                      'role': {'value': role_value, 'name': role_name},
+                      'organization': organization.name
+                    }
         Notification.objects.create(
             sender = sender,
             recipient = recipient,
@@ -204,7 +209,60 @@ class JoinTeamAcceptance(View):
     #TODO add try except for icorrect data send by user
     #TODO use superclass to make it DRY
     def post(self, request, *args, **kwargs):
-       pass
+        # Get data from the form
+        team_admin = request.user
+        applicant = User.objects.get(id=request.POST.get('creator'))
+        team = Team.objects.get(id=request.POST.get('team-id'))
+        notification_type = Notification.NotificationType.JOIN_TEAM_REQUEST
+        
+        # Check if join request from this user exists
+        try:
+            notification = Notification.objects.get(
+                sender = applicant, 
+                recipient = team_admin, 
+                notification_type = notification_type,
+                extra_data__team_id = team.id
+            )
+        except Notification.DoesNotExist:
+            messages.error(
+                request, 
+                message='Ten użytkownik nie wysłał prośby o dołączenie do tej drużyny',
+                extra_tags='alert-danger'
+            )
+            return redirect(reverse_lazy('webapp:index'))
+
+        # Get the role the applicant in applying for and the team's organization name
+        role = notification.extra_data['role']
+        organization_name = notification.extra_data['organization']
+
+        # Add the applicant as a TeamMember
+        TeamMember.objects.create(
+            creator = applicant.creator,
+            team = team,
+            role = role['value']
+        )
+
+        # Notify the applicant that his/her request got accepted
+        Notification.objects.create(
+            sender = team_admin, 
+            recipient = applicant, 
+            notification_type = Notification.NotificationType.JOIN_RESPONSE,
+            message = f'Gratulacje twoja prośba o dołączenie do drużyny dla {organization_name} została zaakcaptowana!',
+            related_url = team.get_absolute_url()
+        )
+
+        # Delete the old notification
+        notification.delete()
+
+        # Add message that the aplicant joined your team
+        messages.info(
+            request, 
+            message=format_html(f'Powitaj nowego członka drużyny na <a href="{team.get_absolute_url()}">chacie</a> 👋'),
+            extra_tags='alert-success'
+        )
+
+        return redirect(request.META.get('HTTP_REFERER'))
+
 
 
 class JoinTeamRejection(View):
