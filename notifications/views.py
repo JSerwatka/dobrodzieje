@@ -66,7 +66,8 @@ class JoinAnnouncementAcceptance(View):
         # Create a new Team
         organization_announcement = Announcement.objects.get(organization__user=organization_user)
         new_team = Team.objects.create(
-            announcement = organization_announcement
+            announcement = organization_announcement,
+            is_closed = True
         )
                                                            
         # Add the user as a TeamMember admin 
@@ -197,3 +198,17 @@ class CancelJoinTeam(View):
         ).delete()
 
         return redirect(request.META.get('HTTP_REFERER'))
+
+
+class JoinTeamAcceptance(View):
+    #TODO add try except for icorrect data send by user
+    #TODO use superclass to make it DRY
+    def post(self, request, *args, **kwargs):
+       pass
+
+
+class JoinTeamRejection(View):
+    #TODO add try except for icorrect data send by user
+    #TODO use superclass to make it DRY
+    def post(self, request, *args, **kwargs):
+        pass
