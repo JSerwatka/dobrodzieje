@@ -162,7 +162,8 @@ class JoinTeam(View):
         sender = request.user
         recipient = team.get_admin()
         notification_type = Notification.NotificationType.JOIN_TEAM_REQUEST
-        message = f'chce dołączyć do drużyny dla {organization}'
+        #TODO add role to the message
+        message = f'chce dołączyć do drużyny dla {organization} na stanowisko ...'
         extra_data = {'team_id': team.id}
         Notification.objects.create(
             sender = sender,
@@ -177,9 +178,18 @@ class JoinTeam(View):
 class CancelJoinTeam(View):
     #TODO add try except for icorrect data send by user
     #TODO use superclass to make it DRY
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):       
+        team = get_object_or_404(Team, id=request.POST['team_id'], is_closed=False)
+
         sender = request.user
-        recipient = User.objects.get(id=request.POST.get('team-admin'))
+        recipient = team.get_admin()
         notification_type = Notification.NotificationType.JOIN_TEAM_REQUEST
-        Notification.objects.get(sender=sender, recipient=recipient, notification_type=notification_type).delete()
+
+        Notification.objects.get(
+            sender=sender, 
+            recipient=recipient, 
+            notification_type=notification_type, 
+            extra_data__team_id = team.id
+        ).delete()
+
         return redirect(request.META.get('HTTP_REFERER'))

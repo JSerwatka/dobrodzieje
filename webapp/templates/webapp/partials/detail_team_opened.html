@@ -22,7 +22,7 @@
 {% else %}
     <form action="{% url "notifications:cancel-join-team" %}" method="POST">
         {% csrf_token %}
-        <input type="hidden" name="team" value="{{ team.id }}">
+        <input type="hidden" name="team_id" value="{{ team.id }}">
         <input type="submit" class="btn btn-secondary" value="Wycofaj zgłoszenie do drużyny">
     </div>
     <div>Team opened - request send</div>
