@@ -1,8 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.contrib import messages
 from webapp.models import (
     Announcement,
+    Organization,
     User,
     Team,
     Creator,
@@ -139,4 +140,46 @@ class JoinAnnouncementRejection(View):
         # Delete this join request notification
         join_request_notif.delete()
 
+        return redirect(request.META.get('HTTP_REFERER'))
+
+class JoinTeam(View):
+    #TODO add try except for icorrect data send by user
+    #TODO use superclass to make it DRY
+    def post(self, request, *args, **kwargs):
+        form_data = request.POST
+        
+        # Confirm that the team is opened and is looking for this role
+        team = get_object_or_404(
+                    Team,
+                    id = form_data['team_id'],
+                    is_closed = False,
+                    looking_for__contains = [form_data['looking_for']]
+                )
+
+        organization = get_object_or_404(Organization, user__id=form_data['organization'])
+
+        # Gather all the data and send notification to the team's admin
+        sender = request.user
+        recipient = team.get_admin()
+        notification_type = Notification.NotificationType.JOIN_TEAM_REQUEST
+        message = f'chce dołączyć do drużyny dla {organization}'
+        extra_data = {'team_id': team.id}
+        Notification.objects.create(
+            sender = sender,
+            recipient = recipient,
+            message = message,
+            notification_type = notification_type,
+            extra_data = extra_data
+        )
+        return redirect(request.META.get('HTTP_REFERER'))
+
+
+class CancelJoinTeam(View):
+    #TODO add try except for icorrect data send by user
+    #TODO use superclass to make it DRY
+    def post(self, request, *args, **kwargs):
+        sender = request.user
+        recipient = User.objects.get(id=request.POST.get('team-admin'))
+        notification_type = Notification.NotificationType.JOIN_TEAM_REQUEST
+        Notification.objects.get(sender=sender, recipient=recipient, notification_type=notification_type).delete()
         return redirect(request.META.get('HTTP_REFERER'))
