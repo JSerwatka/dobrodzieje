@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.fields.json import JSONField
 from webapp.models import User
 
 
@@ -18,3 +19,4 @@ class Notification(models.Model):
     related_url = models.URLField('related url', max_length=255, null=True, blank=True)
     created_on = models.DateTimeField('created on', auto_now_add=True)
     read = models.BooleanField(default=False)
+    extra_data = JSONField(blank=True, null=True)
