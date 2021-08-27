@@ -7,7 +7,8 @@ from webapp.models import (
     User,
     Team,
     Creator,
-    TeamMember
+    TeamMember,
+    Roles
 )
 
 from .models import Notification
@@ -156,14 +157,16 @@ class JoinTeam(View):
                     looking_for__contains = [form_data['looking_for']]
                 )
 
+        #TODO handle with correct reponse status
+        # Get data for the notification's message
         organization = get_object_or_404(Organization, user__id=form_data['organization'])
+        role = Roles.get_labels_by_values(form_data['looking_for'])[0]
 
         # Gather all the data and send notification to the team's admin
         sender = request.user
         recipient = team.get_admin()
         notification_type = Notification.NotificationType.JOIN_TEAM_REQUEST
-        #TODO add role to the message
-        message = f'chce dołączyć do drużyny dla {organization} na stanowisko ...'
+        message = f'chce dołączyć do drużyny dla {organization} na stanowisko {role}'
         extra_data = {'team_id': team.id}
         Notification.objects.create(
             sender = sender,
@@ -179,6 +182,7 @@ class CancelJoinTeam(View):
     #TODO add try except for icorrect data send by user
     #TODO use superclass to make it DRY
     def post(self, request, *args, **kwargs):       
+        #TODO handle with correct reponse status
         team = get_object_or_404(Team, id=request.POST['team_id'], is_closed=False)
 
         sender = request.user
