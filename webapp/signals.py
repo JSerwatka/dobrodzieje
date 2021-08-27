@@ -1,6 +1,6 @@
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
-from .models import Announcement, Team
+from .models import Announcement, Team, TeamMember
 from notifications.models import Notification
 
 @receiver(pre_delete, sender=Team)
@@ -31,3 +31,18 @@ def announcement_pre_delete(sender, instance, *args, **kwargs):
                 notification_type = Notification.NotificationType.DELETION,
                 message = f'Ogłoszenie organizacji {organization} zostało usunięte'
             )
+
+@receiver(pre_delete, sender=TeamMember)
+def teammember_pre_delete(sender, instance, *args, **kwargs):
+    team = instance.team
+    deleted_member = instance.creator.user
+    team_admin = team.get_admin()
+    organization = team.announcement.organization
+    print(deleted_member, team_admin, organization)
+
+    Notification.objects.create(
+        sender = team_admin,
+        recipient = deleted_member, 
+        notification_type = Notification.NotificationType.DELETION,
+        message = f'😫 Zostałeś usunięty z drużyny dla organizacji {organization}'
+    )
