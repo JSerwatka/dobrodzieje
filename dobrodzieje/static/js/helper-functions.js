@@ -34,6 +34,7 @@
         }
         else {
           modalBody.textContent = 'Potwierdzając odrzucisz użytkownika od pracy w Twojej drużynie. Będzie on mógł jednak zgłosić się ponownie.';
+          modalTeamIDInput.value = teamID;
         }
       }
 
