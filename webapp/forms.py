@@ -126,5 +126,5 @@ class TeamJoinForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         team = kwargs['instance']
         # Show only roles that are looked for by the team
-        limited_choices = [(role_key, role_value) for (role_key, role_value) in Roles.choices if role_key in team.looking_for]
+        limited_choices = [(role_value, role_name) for (role_value, role_name) in Roles.choices if role_value in team.looking_for]
         self.fields['looking_for'] = forms.ChoiceField(label='Wybierz rolę', choices=limited_choices)
