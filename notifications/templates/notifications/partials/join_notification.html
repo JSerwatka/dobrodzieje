@@ -15,8 +15,9 @@
           data-form-url="{% url 'notifications:join-announcement-acceptance' %}"
         {% else %}
           data-form-url="{% url 'notifications:join-team-acceptance' %}"
+          data-team-id="{{notification.extra_data.team_id}}"
         {% endif %}>
-  Akceptuj
+  Akceptuj 
 </button>
 <button type="button" 
         class="btn btn-danger js-reject-request" 
@@ -29,6 +30,7 @@
           data-form-url="{% url 'notifications:join-announcement-rejection' %}"
         {% else %}
           data-form-url="{% url 'notifications:join-team-rejection' %}"
+          data-team-id="{{notification.extra_data.team_id}}"
         {% endif %}>
 
   Odrzuć

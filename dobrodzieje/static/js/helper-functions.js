@@ -6,12 +6,14 @@
     const modalBody = document.querySelector('#requestModal .js-modal-body');
     const modalForm = document.querySelector('#requestModal form');
     const modalCreatorInput = document.querySelector('#requestModal .js-creator-input');
+    const modalTeamIDInput = document.querySelector('#requestModal .js-team-id-input');
 
     function populateForm(target, action) {
       const joinRequestType = target.dataset.joinRequestType;
       const formURL = target.dataset.formUrl.trim();
       const senderID = target.dataset.senderId;
       const senderEmail = target.dataset.senderEmail;
+      const teamID = target.dataset.teamId;
 
       if (action === 'accept') {
         modalTitle.textContent = 'Potwierdź użytkownika';
@@ -21,6 +23,7 @@
         }
         else {
           modalBody.textContent = 'Gdy potwierdzisz, użytkownik ten dołączy do Twojej drużyny. Aby się z nim skontaktować wyślij do niego maila';
+          modalTeamIDInput.value = teamID;
         }
       }
       else {
