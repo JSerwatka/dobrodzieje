@@ -19,6 +19,9 @@ class Roles(models.TextChoices):
     BACKEND = ('BE', 'Back-End Developer')
     DESIGNER = ('GD', 'Graphic Designer')
 
+    @classmethod
+    def get_labels_by_values(cls, values):
+        return [role_name for (role_value, role_name) in Roles.choices if role_value in values]
 
 
 # ===== Models =====
