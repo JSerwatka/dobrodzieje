@@ -11,12 +11,11 @@
         data-sender-id="{{ notification.sender.id }}"
         data-sender-email="{{ notification.sender }}"
         data-join-request-type="{{ notification.get_notification_type_display }}"
-        data-form-url="
-          {% if notification.get_notification_type_display == 'Join Announcement Request' %}
-            {% url 'notifications:join-announcement-acceptance' %}
-          {% else %}
-            {% url 'notifications:join-team-acceptance' %}
-          {% endif %}">
+        {% if notification.get_notification_type_display == 'Join Announcement Request' %}
+          data-form-url="{% url 'notifications:join-announcement-acceptance' %}"
+        {% else %}
+          data-form-url="{% url 'notifications:join-team-acceptance' %}"
+        {% endif %}>
   Akceptuj
 </button>
 <button type="button" 
@@ -26,12 +25,11 @@
         data-sender-id="{{ notification.sender.id }}"
         data-sender-email="{{ notification.sender }}"
         data-join-request-type="{{ notification.get_notification_type_display }}"
-        data-form-url="
-          {% if notification.get_notification_type_display == 'Join Announcement Request' %}
-            {% url 'notifications:join-announcement-rejection' %}
-          {% else %}
-            {% url 'notifications:join-team-rejection' %}
-          {% endif %}">
+        {% if notification.get_notification_type_display == 'Join Announcement Request' %}
+          data-form-url="{% url 'notifications:join-announcement-rejection' %}"
+        {% else %}
+          data-form-url="{% url 'notifications:join-team-rejection' %}"
+        {% endif %}>
 
   Odrzuć
 </button>
