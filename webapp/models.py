@@ -107,7 +107,7 @@ class Announcement(models.Model):
     organization = models.OneToOneField(Organization, on_delete=models.CASCADE)
     logo = models.ImageField('organization\'s logo', upload_to='logos/', blank=True, null=True)
     content = RichTextField('what needs to be done', blank=False, null=False)
-    #TODO zdjęcia przyszłej strony??
+    #TODO images of the future website??
     old_website = models.URLField('previous organization\'s website', blank=True, null=True)
     created_on = models.DateTimeField('created on', auto_now_add=True)
 
@@ -180,12 +180,12 @@ class TeamMember(models.Model):
 
     # TODO rename to show_creator
     @admin.display(description='Creator')
-    def get_creator_str(self):
+    def show_creator(self):
         return str(self.creator)    
 
     # TODO rename show_team
     @admin.display(description='Team')
-    def get_team_str(self):
+    def show_team(self):
         return str(self.team)
 
     class Meta:
