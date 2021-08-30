@@ -11,6 +11,7 @@
 {% block content %}
     <div class="container">
         <form method="GET">
+            {{ filter_announcements.form.announcement_status|as_crispy_field }}
             {{ filter_announcements.form.category|as_crispy_field }}
             {{ filter_announcements.form.city|as_crispy_field }}
             <div>
