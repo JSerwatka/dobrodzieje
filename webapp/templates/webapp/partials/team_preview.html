@@ -31,10 +31,10 @@
             Drużyna:
             <ul>
                 {% for team_member in team.teammember_set.all %}
-                    <li>{{ team_member.creator }} - {{ team_member.get_role_display }} 
-
-
-                    </li>
+                    {% if team_member.joined %}
+                        <li>{{ team_member.nick }} - {{ team_member.get_role_display }}</li>
+                       
+                    {% endif %}
                 {% endfor %}
             </ul>
         </p>

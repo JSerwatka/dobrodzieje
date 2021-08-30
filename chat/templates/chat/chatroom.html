@@ -117,7 +117,7 @@
                 <div class="h4">Uczestnicy</div>
                 <ul>
                     {% for member in members %}
-                        <li {% if member.is_admin %}style='color:red'{% endif %}>{{ member.creator }} - {{ member.get_role_display }} 
+                        <li {% if member.is_admin %}style='color:red'{% endif %}>{{ member.nick }} - {{ member.get_role_display }} 
                             {% if not member.is_admin and user_is_admin %}
                                 <!-- Button trigger delete team member modal -->        
                                 <button type="button" class="btn btn-danger js-delete-member" data-bs-toggle="modal" data-bs-target="#deleteTeamMemberModal" data-member-id="{{ member.id }}">
