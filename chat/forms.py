@@ -13,10 +13,17 @@ class TeamForm(forms.ModelForm):
         model = Team
         fields = ['is_closed', 'our_stack', 'looking_for']
 
-class TeamMemberNickForm(forms.ModelForm):
+class JoinTeamAdminForm(forms.ModelForm):
     nick = forms.CharField(label="Jak chcesz się nazywać w drużynie?", required=True)
     role = forms.ChoiceField(label="Wybierz swoją rolę", choices=Roles.choices)
 
     class Meta:
         model = TeamMember
         fields = ['role', 'nick']
+
+class JoinTeamForm(forms.ModelForm):
+    nick = forms.CharField(label="Jak chcesz się nazywać w drużynie?", required=True)
+
+    class Meta:
+        model = TeamMember
+        fields = ['nick']

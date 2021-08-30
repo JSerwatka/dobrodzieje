@@ -4,10 +4,7 @@
 {% block content %}
     <form method="POST">
         {% csrf_token %}
-        {% if teammember.is_admin %}
-            {{ form.role|as_crispy_field }}
-        {% endif %}
-        {{ form.nick|as_crispy_field }}
+        {{ form|crispy }}
         <input type="submit" class="btn btn-primary" value="Przejdź do czatu">
     </form>
 {% endblock content %}

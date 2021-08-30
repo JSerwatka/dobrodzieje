@@ -14,7 +14,7 @@ from django.views.generic import (
     UpdateView,
 )
 
-from .forms import TeamForm, TeamMemberNickForm
+from .forms import TeamForm, JoinTeamAdminForm, JoinTeamForm
 
 # Create your views here.
 #TODO accept only joined team members
@@ -62,7 +62,6 @@ def team_chat(request, team_id):
 
 #TODO add auhtontication test method + restrict to joined users
 class JoinChat(UpdateView):
-    form_class = TeamMemberNickForm
     template_name = 'chat/join_chat.html'
 
     def get_object(self):
@@ -74,6 +73,17 @@ class JoinChat(UpdateView):
         form.instance.joined = True
         form.instance.save()
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        print(form)
+        return super().form_invalid(form)
+
+    def get_form_class(self):
+        team_member = self.get_object()
+        if team_member.is_admin:
+            return JoinTeamAdminForm
+        else:
+            return JoinTeamForm
 
     def get_success_url(self):
         team_id = self.kwargs.get('team_id')
