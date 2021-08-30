@@ -15,7 +15,8 @@ class TeamForm(forms.ModelForm):
 
 class TeamMemberNickForm(forms.ModelForm):
     nick = forms.CharField(label="Jak chcesz się nazywać w drużynie?", required=True)
+    role = forms.ChoiceField(label="Wybierz swoją rolę", choices=Roles.choices)
 
     class Meta:
         model = TeamMember
-        fields = ['nick']
+        fields = ['role', 'nick']

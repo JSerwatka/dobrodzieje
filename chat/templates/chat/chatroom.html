@@ -117,6 +117,7 @@
                 <div class="h4">Uczestnicy</div>
                 <ul>
                     {% for member in members %}
+                        {% comment %} #TODO dont show not joined users {% endcomment %}
                         <li {% if member.is_admin %}style='color:red'{% endif %}>{{ member.nick }} - {{ member.get_role_display }} 
                             {% if not member.is_admin and user_is_admin %}
                                 <!-- Button trigger delete team member modal -->        

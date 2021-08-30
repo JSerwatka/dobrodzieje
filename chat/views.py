@@ -41,7 +41,7 @@ def team_chat(request, team_id):
     # New members have to enter their nick
     if not current_member.joined:
         return redirect(
-                reverse_lazy('chat:choose-nick', 
+                reverse_lazy('chat:join-chat', 
                 kwargs={
                     'team_id': team_id,
                     'team_member_id': current_member.id
@@ -61,9 +61,9 @@ def team_chat(request, team_id):
 
 
 #TODO add auhtontication test method + restrict to joined users
-class ChooseNick(UpdateView):
+class JoinChat(UpdateView):
     form_class = TeamMemberNickForm
-    template_name = 'chat/choose_nick.html'
+    template_name = 'chat/join_chat.html'
 
     def get_object(self):
         team_member_id = self.kwargs.get('team_member_id')

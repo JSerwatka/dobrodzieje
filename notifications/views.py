@@ -257,7 +257,7 @@ class JoinTeamAcceptance(View):
         # Add message that the aplicant joined your team
         messages.info(
             request, 
-            message=format_html(f'Powitaj nowego członka drużyny na <a href="{team.get_absolute_url()}">chacie</a> 👋'),
+            message=format_html(f'Powitaj nowego członka drużyny na <a href="{team.get_absolute_url()}">czacie gdy dołączy 👋'),
             extra_tags='alert-success'
         )
 
