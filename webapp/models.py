@@ -1,10 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from .managers import CustomAccountManager, AnnouncementQuerySetManager, CityManager
 from django.contrib.postgres.fields import ArrayField
 from ckeditor.fields import RichTextField
 from django.contrib import admin
 from django.urls import reverse
+from .managers import (
+    CustomAccountManager, 
+    AnnouncementQuerySetManager, 
+    CityManager
+)
 
 
 # ===== Choices =====
@@ -15,6 +19,9 @@ class Roles(models.TextChoices):
     BACKEND = ('BE', 'Back-End Developer')
     DESIGNER = ('GD', 'Graphic Designer')
 
+    @classmethod
+    def get_labels_by_values(cls, values):
+        return [role_name for (role_value, role_name) in Roles.choices if role_value in values]
 
 
 # ===== Models =====
@@ -36,7 +43,7 @@ class User(AbstractBaseUser,PermissionsMixin):
 
 
 class Voivodeship(models.Model):
-    name = models.CharField(max_length=255, blank=False, null=False)
+    name = models.CharField(max_length=255,  unique=True)
 
     def __str__(self):
         return self.name
@@ -46,11 +53,12 @@ class City(models.Model):
     objects = CityManager()
 
     voivodeship = models.ForeignKey(Voivodeship, on_delete=models.CASCADE)
-    name = models.CharField(max_length=255, blank=False)
+    name = models.CharField(max_length=255)
 
     class Meta:
         verbose_name_plural = 'Cities'
         ordering = ('name',)
+        unique_together = ['voivodeship', 'name']
 
     def __str__(self):
         return self.name
@@ -150,34 +158,35 @@ class Team(models.Model):
         blank=True, 
         null=True
     )
-    #TODO chat foreign key (potrzebny?)
 
     def __str__(self):
         return f'Team for {self.announcement}'
+
+    def get_absolute_url(self):
+        return reverse("chat:team-chat", kwargs={"team_id": self.id})
+
+    def get_admin(self):
+        return self.teammember_set.get(is_admin=True).creator.user
 
 
 # Jak używać many to many https://youtu.be/-HuTlmEVOgU?t=890
 class TeamMember(models.Model):
     creator = models.ForeignKey(Creator, on_delete=models.CASCADE)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
-    role = models.CharField(max_length=2, choices=Roles.choices)
+    role = models.CharField(max_length=2, choices=Roles.choices, null=True)
     is_admin = models.BooleanField('is admin?', default=False)
-    #TODO nick/alias (for single chat)
+    nick = models.CharField(max_length=50, null=True)
+    joined = models.BooleanField('user joined?', default=False)
 
+    # TODO rename to show_creator
     @admin.display(description='Creator')
     def get_creator_str(self):
         return str(self.creator)    
-        
+
+    # TODO rename show_team
     @admin.display(description='Team')
     def get_team_str(self):
         return str(self.team)
 
     class Meta:
         unique_together = ['creator', 'team']
-
-
-
-
-
-
-#TODO Notifications model

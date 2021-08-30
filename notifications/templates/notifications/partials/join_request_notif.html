@@ -1,0 +1,37 @@
+{{ notification.sender }} - 
+{{ notification.recipient }} - 
+{{ notification.message }} - 
+{{ notification.notification_type }}
+
+<!-- Button trigger modal -->
+<button type="button" 
+        class="btn btn-primary js-accept-request" 
+        data-bs-toggle="modal" 
+        data-bs-target="#requestModal" 
+        data-sender-id="{{ notification.sender.id }}"
+        data-sender-email="{{ notification.sender }}"
+        data-join-request-type="{{ notification.get_notification_type_display }}"
+        {% if notification.get_notification_type_display == 'Join Announcement Request' %}
+          data-form-url="{% url 'notifications:join-announcement-acceptance' %}"
+        {% else %}
+          data-form-url="{% url 'notifications:join-team-acceptance' %}"
+          data-team-id="{{notification.extra_data.team_id}}"
+        {% endif %}>
+  Akceptuj 
+</button>
+<button type="button" 
+        class="btn btn-danger js-reject-request" 
+        data-bs-toggle="modal" 
+        data-bs-target="#requestModal"
+        data-sender-id="{{ notification.sender.id }}"
+        data-sender-email="{{ notification.sender }}"
+        data-join-request-type="{{ notification.get_notification_type_display }}"
+        {% if notification.get_notification_type_display == 'Join Announcement Request' %}
+          data-form-url="{% url 'notifications:join-announcement-rejection' %}"
+        {% else %}
+          data-form-url="{% url 'notifications:join-team-rejection' %}"
+          data-team-id="{{notification.extra_data.team_id}}"
+        {% endif %}>
+
+  Odrzuć
+</button>

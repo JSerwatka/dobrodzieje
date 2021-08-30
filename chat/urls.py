@@ -8,4 +8,5 @@ urlpatterns = [
     path('<int:team_id>/ustawienia', views.UpdateTeamSettings.as_view(), name='update-team-settings'),
     path('<int:team_id>/druzyna', views.DeleteTeam.as_view(), name='delete-team'),
     path('<int:team_id>/czlonkowie', views.RemoveUserFromTeam.as_view(), name='delete-team-member'),
+    path('<int:team_id>/dolacz/<int:team_member_id>', views.JoinChat.as_view(), name='join-chat'),
 ]

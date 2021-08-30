@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'webapp',
     'chat',
+    'notifications',
     'ckeditor',
     'crispy_forms',
     'django_filters',

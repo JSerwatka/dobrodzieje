@@ -1,0 +1,29 @@
+{% load crispy_forms_tags %}
+{% load notifications_tags %}
+{% load custom_tags %}
+
+
+{% join_request_send join_request_type='Team' as join_team_request_send %}
+{% get_arrayfield_display team arrayfield='our_stack' as our_stack%}
+{% get_arrayfield_display team arrayfield='looking_for' as looking_for%}
+
+<div>Our stack: {{ our_stack }}</div>
+<div>Looking for: {{ looking_for }}</div>
+{% comment %} #TODO show badge team opened + stack + looking for {% endcomment %}
+    {% if not join_team_request_send %}
+    <form action="{% url "notifications:join-team" %}" method="POST">
+        {% csrf_token %}
+        {{looking_for_form|crispy}}
+        <input type="hidden" name="organization" value="{{ organization_id }}">
+        <input type="hidden" name="team_id" value="{{ team.id }}">
+        <input type="submit" class="btn btn-secondary" value="Zgłoś się do drużyny">
+    </div>
+    <div>Team opened - request not send</div>
+{% else %}
+    <form action="{% url "notifications:cancel-join-team" %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="team_id" value="{{ team.id }}">
+        <input type="submit" class="btn btn-secondary" value="Wycofaj zgłoszenie do drużyny">
+    </div>
+    <div>Team opened - request send</div>
+{% endif %}

@@ -15,6 +15,7 @@
         </button>
 
         <!-- Settings Modal -->
+        {% comment %} #TODO FORCE: opened group has to have looking_for filled - otherwise causes error in limited_choices var in TeamJoinForm form {% endcomment %}
         <div class="modal fade" id="teamSettingsModal" tabindex="-1" aria-labelledby="teamSettingsModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -116,7 +117,8 @@
                 <div class="h4">Uczestnicy</div>
                 <ul>
                     {% for member in members %}
-                        <li {% if member.is_admin %}style='color:red'{% endif %}>{{ member.creator }} - {{ member.get_role_display }} 
+                        {% comment %} #TODO dont show not joined users {% endcomment %}
+                        <li {% if member.is_admin %}style='color:red'{% endif %}>{{ member.nick }} - {{ member.get_role_display }} 
                             {% if not member.is_admin and user_is_admin %}
                                 <!-- Button trigger delete team member modal -->        
                                 <button type="button" class="btn btn-danger js-delete-member" data-bs-toggle="modal" data-bs-target="#deleteTeamMemberModal" data-member-id="{{ member.id }}">

@@ -31,13 +31,13 @@
             Drużyna:
             <ul>
                 {% for team_member in team.teammember_set.all %}
-                    <li>{{ team_member.creator }} - {{ team_member.get_role_display }} 
-
-
-                    </li>
+                    {% if team_member.joined %}
+                        <li>{{ team_member.nick }} - {{ team_member.get_role_display }}</li>
+                       
+                    {% endif %}
                 {% endfor %}
             </ul>
         </p>
-        <a href="{% url 'chat:team-chat' team_id=team.id %}" class="btn btn-primary stretched-link">Przejdź do czatu</a>
+        <a href="{{ team.get_absolute_url }}" class="btn btn-primary stretched-link">Przejdź do czatu</a>
     </div>
 </div>

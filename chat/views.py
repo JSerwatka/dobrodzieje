@@ -14,9 +14,10 @@ from django.views.generic import (
     UpdateView,
 )
 
-from .forms import TeamForm
+from .forms import TeamForm, JoinTeamAdminForm, JoinTeamForm
 
-# Create your views here.
+
+#TODO accept only joined team members
 def team_chat(request, team_id):
     # Check if the team exists and the current user is authorized to view its chat
     #TODO make sure it works for unauthenticated users
@@ -35,19 +36,59 @@ def team_chat(request, team_id):
         return redirect(reverse_lazy('webapp:index'))
     
     members = team.teammember_set.select_related('creator__user')
-    # members = team.teammember_set.all()
-    current_user_admin = members.filter(creator__user=request.user).first().is_admin
+    current_member = members.get(creator__user=request.user)
+
+    # New members have to enter their nick
+    if not current_member.joined:
+        return redirect(
+                reverse_lazy('chat:join-chat', 
+                kwargs={
+                    'team_id': team_id,
+                    'team_member_id': current_member.id
+                }))
+
+    current_member_admin = current_member.is_admin
     organization = team.announcement.organization
-    #TODO settings - delete group, open/close, add looking_for, add stack
 
     return render(request, 'chat/chatroom.html', {
         'team_id': team_id,
         'team': team,
         'members': members,
         'organization': organization,
-        'user_is_admin': current_user_admin,
+        'user_is_admin': current_member_admin,
         'form': TeamForm(instance=team)
     })
+
+
+#TODO add auhtontication test method + restrict to joined users
+class JoinChat(UpdateView):
+    template_name = 'chat/join_chat.html'
+
+    def get_object(self):
+        team_member_id = self.kwargs.get('team_member_id')
+        return TeamMember.objects.get(id=team_member_id)
+
+    def form_valid(self, form):
+        # team member joined the team
+        form.instance.joined = True
+        form.instance.save()
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        print(form)
+        return super().form_invalid(form)
+
+    def get_form_class(self):
+        team_member = self.get_object()
+        if team_member.is_admin:
+            return JoinTeamAdminForm
+        else:
+            return JoinTeamForm
+
+    def get_success_url(self):
+        team_id = self.kwargs.get('team_id')
+        return reverse_lazy('chat:team-chat', kwargs={'team_id': team_id})
+
 
 #TODO add auhtontication test method
 class LoadMessages(ListView):
@@ -75,7 +116,6 @@ class UpdateTeamSettings(UpdateView):
     model = Team
     form_class = TeamForm
     http_method_names = ['post']
-    success_url = ''
 
     #TODO handle open/close, add looking_for, add stack views
     def get_object(self):

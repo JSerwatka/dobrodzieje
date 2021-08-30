@@ -449,6 +449,7 @@ def insert_cities():
 		(7, 'Płock'),
 		(7, 'Radom'),
 		(7, 'Siedlce'),
+		(7, 'Warszawa'),
 		(8, 'Brzeg'),
 		(8, 'Grodków'),
 		(8, 'Lewin Brzeski'),

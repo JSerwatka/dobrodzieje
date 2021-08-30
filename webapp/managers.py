@@ -44,7 +44,7 @@ class AnnouncementQuerySetManager(models.QuerySet):
         return announcement
 
 
-class CityManager(models.Manager):
+class CityManager(models.Manager):   
     def used_cities(self):
         from .models import Organization
 
