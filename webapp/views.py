@@ -236,7 +236,7 @@ class Login(LoginView):
         return context
 
 
-# Forces all regsiter views to activate "Zarejestruj się" navbar item
+# Forces all register views to activate "Zarejestruj się" navbar item
 class RegisterContextMixin():
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

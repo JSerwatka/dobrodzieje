@@ -178,10 +178,12 @@ class TeamMember(models.Model):
     nick = models.CharField(max_length=50, null=True)
     joined = models.BooleanField('user joined?', default=False)
 
+    # TODO rename to show_creator
     @admin.display(description='Creator')
     def get_creator_str(self):
         return str(self.creator)    
-        
+
+    # TODO rename show_team
     @admin.display(description='Team')
     def get_team_str(self):
         return str(self.team)
