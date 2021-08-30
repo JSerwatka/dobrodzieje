@@ -62,7 +62,7 @@ class TeamAdmin(admin.ModelAdmin):
 
 @admin.register(TeamMember)
 class TeamMemberAdmin(admin.ModelAdmin):
-    list_display = ('id', 'get_creator_str', 'get_team_str', 'role', 'is_admin')
+    list_display = ('id', 'show_creator', 'show_team', 'role', 'is_admin')
     list_filter = ('role', 'is_admin')
 
 
