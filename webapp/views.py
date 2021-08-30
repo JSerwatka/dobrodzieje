@@ -103,8 +103,8 @@ class AnnouncementDetails(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        #TODO why this works without knowing announcement id?
-        is_author = Announcement.objects.is_author(self.request.user)
+        is_author = context['announcement'].is_author(self.request.user)
+
         context['is_author'] = is_author
         #TODO context['is_creator'] -> check for (try) not logged in users
         context['is_creator'] = self.request.user.is_creator
@@ -145,12 +145,13 @@ class MyAnnouncement(TemplateView):
     template_name = 'webapp/announcement_empty.html'
 
     def get(self, request, *args, **kwargs):
-        announcement = Announcement.objects.for_user(request.user)
-        if announcement:
-            return redirect(reverse_lazy('webapp:announcement-detail', kwargs={'id': announcement.id}))
+        try:
+            announcement = Announcement.objects.for_user(request.user)
+        except Announcement.DoesNotExist:
+            return super().get(request, *args, **kwargs)
+        
+        return redirect(reverse_lazy('webapp:announcement-detail', kwargs={'id': announcement.id}))
 
-        return super().get(request, *args, **kwargs)
-    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['navbar_active'] = 'my-announcement'

@@ -40,11 +40,7 @@ class AnnouncementFilter(django_filters.FilterSet):
     #                                                   field_name='team__looking_for',
     #                                                   choices=Roles.choices,
     #                                                   widget=forms.Select(attrs={'data-multi-select-plugin': None}))
-    # is_closed = django_filters.BooleanFilter(label='Status grupy',
-    #                                          field_name='team__is_closed',
-    #                                          lookup_expr='exact')
 
-    #TODO 
     class Meta:
         model = Announcement
         fields = ['category']   

@@ -1,6 +1,6 @@
 from django.contrib.auth.models import BaseUserManager
 from django.db import models
-from django.core.exceptions import BadRequest
+from  django.core.exceptions import BadRequest
 
 
 class CustomAccountManager(BaseUserManager):
@@ -32,14 +32,14 @@ class CustomAccountManager(BaseUserManager):
 
 class AnnouncementQuerySetManager(models.QuerySet):
     def for_user(self, user):
-        return self.filter(organization__user__email=user).first()
-
-    def is_author(self, user):
-        return True if self.filter(organization__user__email=user).first() else False
+        return self.get(organization__user=user)
 
     def for_user_or_400(self, user):
-        announcement = self.for_user(user=user)
-        if announcement is None:
+        from webapp.models import Announcement
+
+        try:
+            announcement = self.for_user(user=user)
+        except Announcement.DoesNotExist:
             raise BadRequest('Invalid request.')
         return announcement
 

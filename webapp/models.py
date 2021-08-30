@@ -102,7 +102,7 @@ class Creator(models.Model):
 
 
 class Announcement(models.Model):
-    objects = AnnouncementQuerySetManager().as_manager()
+    objects = AnnouncementQuerySetManager.as_manager()
 
     organization = models.OneToOneField(Organization, on_delete=models.CASCADE)
     logo = models.ImageField('organization\'s logo', upload_to='logos/', blank=True, null=True)
@@ -115,7 +115,10 @@ class Announcement(models.Model):
         return f'Announcement by {self.organization}'
 
     def get_absolute_url(self):
-        return reverse('webapp:announcement-detail', kwargs={'id': self.id}) 
+        return reverse('webapp:announcement-detail', kwargs={'id': self.id})
+
+    def is_author(self, user):
+        return self.organization.user == user
 
 
 class Team(models.Model):
