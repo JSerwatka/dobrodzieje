@@ -160,7 +160,8 @@
 
         function appendNewMsg(data, loadedMsgs=false) {
             const messageList = document.querySelector('#message-list');
-            //#TODO set postion ass li clas
+            //#TODO set position ass li class (current user or other users - right, left)
+            //#TODO use nick instead of email
             const position = (data.sender === currentUser) ? 'right' : 'left'
             const newMsg = document.createElement("li");
             newMsg.innerHTML = `<li>${data.sender}: ${data.content}</li>`;
