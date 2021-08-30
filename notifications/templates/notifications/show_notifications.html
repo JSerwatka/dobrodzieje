@@ -11,7 +11,7 @@
                 {% if notification.notification_type == 2 or notification.notification_type == 3 %}
                     {% include 'notifications/partials/join_request_notif.html' with notification=notification %}
                 {% elif notification.notification_type == 4 %}
-                    {% include 'notifications/partials/join_response_notif.html' %}
+                    {% include 'notifications/partials/join_response_notif.html' with notification=notification %}
                 {% else %}
                     {{ notification.sender }} - 
                     {{ notification.recipient }} - 

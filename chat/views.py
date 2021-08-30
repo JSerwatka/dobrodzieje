@@ -16,7 +16,7 @@ from django.views.generic import (
 
 from .forms import TeamForm, JoinTeamAdminForm, JoinTeamForm
 
-# Create your views here.
+
 #TODO accept only joined team members
 def team_chat(request, team_id):
     # Check if the team exists and the current user is authorized to view its chat
