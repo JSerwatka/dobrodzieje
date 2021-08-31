@@ -1,7 +1,11 @@
+{% comment %} #TODO use better data on preview {% endcomment %}
 <div class="card mb-3 bg-light border-info">
     <div class="card-body">
         <h5 class="card-title">{{ announcement.organization.name }}</h5>
         <h6 class="card-subtitle mb-2 text-muted">{{ announcement.created_on }}</h6>
+        <div>            
+            {% include 'webapp/partials/show_announcement_badge.html' with announcement_state=announcement.extra_data.announcement_state team=announcement.extra_data.team %}
+        </div>
         <p class="card-text">{{ announcement.content|safe }}</p>
         <div class="card-footer">
             {{ announcement.organization.get_category_display }}

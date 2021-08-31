@@ -8,8 +8,7 @@
                 <a class="btn btn-danger" href="{% url "webapp:announcement-delete" %}">Usuń Ogłoszenie</a>
             </div>
         {% endif %}
-        {% comment %} #TODO show announcement_state badges to all users not only creators {% endcomment %}
-        {% include 'webapp/partials/show_announcement_badge.html' with team=team %}
+        {% include 'webapp/partials/show_announcement_badge.html' with announcement_state=announcement_state team=team %}
         {% if is_creator %}
             {% if announcement_state == 'no team' %}
                 {% include 'webapp/partials/form_no_team.html' with organization_id=announcement.organization.user.id %}
