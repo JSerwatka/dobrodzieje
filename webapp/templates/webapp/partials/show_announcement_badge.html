@@ -1,0 +1,16 @@
+{% load custom_tags %}
+
+
+{% if announcement_state == 'no team' %}
+    no team
+{% elif announcement_state == 'team opened' %}
+    {% get_arrayfield_display team arrayfield='our_stack' as our_stack%}
+    {% get_arrayfield_display team arrayfield='looking_for' as looking_for%}
+
+    <div>Our stack: {{ our_stack }}</div>
+    <div>Looking for: {{ looking_for }}</div>
+{% elif announcement_state == 'team closed' %}
+    team closed
+{% elif announcement_state == 'team member' %}
+    team member
+{% endif %}
