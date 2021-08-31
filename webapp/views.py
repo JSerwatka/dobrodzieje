@@ -1,13 +1,8 @@
-# from django.views.generic.base import RedirectView
-# from django.views.generic.detail import DetailView
-# from django.views.generic.edit import CreateView, DeleteView
-# from django.views.generic.base import TemplateView
-from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, logout, login
 from django.contrib import messages
-
+from django.contrib.auth.views import LoginView
 from django.views.generic import (
     TemplateView,
     RedirectView,
@@ -17,14 +12,17 @@ from django.views.generic import (
     DeleteView,
     ListView
 )
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+from .authorization import (
+    UserIsOrganizationTestMixin,
+    UserIsCreatorTestMixin
+)
 from .models import (
     Announcement, 
-    Organization, 
     User,
-    Creator,
     Team
 )
-
 from .forms import (
     OrganizationRegisterForm,
     CreatorRegisterForm,
@@ -33,10 +31,7 @@ from .forms import (
     CreatorEditForm,
     TeamJoinForm
 )
-
-from .filters import (
-    AnnouncementFilter,
-)
+from .filters import AnnouncementFilter
 
 
 # ==== Basic ===== 
@@ -158,7 +153,7 @@ class MyAnnouncement(TemplateView):
         return context
 
 
-class AnnouncementCreate(CreateView):
+class AnnouncementCreate(UserIsOrganizationTestMixin, CreateView):
     template_name = 'webapp/announcement_edit.html'
     form_class = AnnouncementForm
 
@@ -172,7 +167,7 @@ class AnnouncementCreate(CreateView):
         return context
 
 
-class AnnouncementUpdate(UpdateView):
+class AnnouncementUpdate(UserIsOrganizationTestMixin, UpdateView):
     template_name = 'webapp/announcement_edit.html'
     form_class = AnnouncementForm
 
@@ -185,7 +180,7 @@ class AnnouncementUpdate(UpdateView):
         return context
 
 
-class AnnouncementDelete(DeleteView):
+class AnnouncementDelete(UserIsOrganizationTestMixin, DeleteView):
     template_name = 'webapp/announcement_delete.html'
     success_url = reverse_lazy('webapp:index')
     
@@ -194,7 +189,7 @@ class AnnouncementDelete(DeleteView):
 
 
 # ==== Teams ===== 
-class MyTeams(ListView):
+class MyTeams(UserIsCreatorTestMixin, ListView):
     template_name = 'webapp/teams_list.html'
     context_object_name = 'teams'
     #TODO paginate_by = 10 
@@ -208,7 +203,7 @@ class MyTeams(ListView):
         return Team.objects.filter(members__user=self.request.user).select_related('announcement').prefetch_related('teammember_set')
 
 # ==== Edit Profile ===== 
-class EditProfile(UpdateView):
+class EditProfile(LoginRequiredMixin, UpdateView):
     template_name = 'webapp/edit_profile.html'
 
     def get_form_class(self):
@@ -238,7 +233,7 @@ class Login(LoginView):
 
 
 # Forces all register views to activate "Zarejestruj się" navbar item
-class RegisterContextMixin():
+class RegisterContextMixin:
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['navbar_active'] = 'register'
