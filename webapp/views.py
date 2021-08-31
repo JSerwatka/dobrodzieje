@@ -92,7 +92,7 @@ class AnnouncementStateContextMixin:
 
 
 class AnnouncementList(ListView, AnnouncementStateContextMixin):
-    template_name = 'webapp/announcemenet_list.html'
+    template_name = 'webapp/announcement_list.html'
     context_object_name = 'announcements'
     paginate_by = 10 
     
@@ -113,9 +113,9 @@ class AnnouncementList(ListView, AnnouncementStateContextMixin):
             filterd_qs = self.filter_announcements.qs
 
         # Add announcemenet state info to the announcements
-        # for announcemenet in filterd_qs:
-        #     announcemenet.announcemenet_state = super().get_announcement_state(announcemenet)
-        #     print(announcemenet.__dict__)
+        for announcement in filterd_qs:
+            announcement.extra_data = super().get_announcement_state(announcement)
+
         return filterd_qs
 
 
@@ -186,7 +186,7 @@ class AnnouncementUpdate(UpdateView):
 
 
 class AnnouncementDelete(DeleteView):
-    template_name = 'webapp/announcemenet_delete.html'
+    template_name = 'webapp/announcement_delete.html'
     success_url = reverse_lazy('webapp:index')
     
     def get_object(self):
