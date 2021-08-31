@@ -67,14 +67,34 @@ class ForOrganizations(TemplateView):
 
 
 # ==== Announcement ===== 
-class AnnouncementList(ListView):
+class AnnouncementStateContextMixin:
+    def get_announcement_state(self, announcement):
+        context = {}
+
+        # Check if the announcement has a team
+        if hasattr(announcement, 'team'):
+            team = announcement.team
+            # Check if the current user is not a member
+            if not team.members.filter(user=self.request.user).exists():
+                if team.is_closed:
+                    context['announcement_state'] = 'team closed'
+                else:
+                    context['announcement_state'] = 'team opened'
+                    context['team'] = team
+            # The current user is the team's member
+            else:
+                context['announcement_state'] = 'team member' 
+        # The announcement has no team yet
+        else:
+            context['announcement_state'] = 'no team'
+        
+        return context
+
+
+class AnnouncementList(ListView, AnnouncementStateContextMixin):
     template_name = 'webapp/announcemenet_list.html'
     context_object_name = 'announcements'
     paginate_by = 10 
-
-    # def dispatch(self, request, *args, **kwargs):
-    #     self.filter_organization = None  # Will be set in get_queryset()
-    #     return super().dispatch(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -84,16 +104,22 @@ class AnnouncementList(ListView):
 
     def get_queryset(self):
         qs = Announcement.objects.select_related('organization').order_by('created_on')
+        # Filter announcements
         self.filter_announcements = AnnouncementFilter(self.request.GET, queryset=qs)
         voivodeship_id = self.request.GET.get('voivodeship')
         if voivodeship_id:
-            output_qs = self.filter_announcements.qs.filter(organization__city__voivodeship_id=voivodeship_id)
+            filterd_qs = self.filter_announcements.qs.filter(organization__city__voivodeship_id=voivodeship_id)
         else:
-            output_qs = self.filter_announcements.qs
-        return output_qs
+            filterd_qs = self.filter_announcements.qs
+
+        # Add announcemenet state info to the announcements
+        # for announcemenet in filterd_qs:
+        #     announcemenet.announcemenet_state = super().get_announcement_state(announcemenet)
+        #     print(announcemenet.__dict__)
+        return filterd_qs
 
 
-class AnnouncementDetails(DetailView):
+class AnnouncementDetails(DetailView, AnnouncementStateContextMixin):
     template_name = 'webapp/announcement_detail.html'
     context_object_name = 'announcement'
 
@@ -108,36 +134,10 @@ class AnnouncementDetails(DetailView):
         context['is_author'] = is_author
         #TODO context['is_creator'] -> check for (try) not logged in users
         context['is_creator'] = self.request.user.is_creator
-        context.update(self.get_announcement_state())
-        if context['announcemenet_state'] == 'team opened':
+        context.update(super().get_announcement_state(self.get_object()))
+        if context['announcement_state'] == 'team opened':
             context['looking_for_form'] = TeamJoinForm(instance=context['team'])
         context['navbar_active'] = 'my-announcement' if is_author else None
-        return context
-
-    def get_announcement_state(self):
-        context = {}
-
-        # Get announcement
-        announcement = self.get_object()
-
-        # Check if the announcement has a team
-        if hasattr(announcement, 'team'):
-            team = announcement.team
-            # Check if the current user is not a member
-            if not team.members.filter(user=self.request.user).exists():
-                if team.is_closed:
-                    context['announcemenet_state'] = 'team closed'
-                else:
-                    context['announcemenet_state'] = 'team opened'
-                    context['team'] = team
-                    pass
-            # The current user is the team's member
-            else:
-                context['announcemenet_state'] = 'team member' 
-        # The announcement has no team yet
-        else:
-            context['announcemenet_state'] = 'no team'
-        
         return context
             
 

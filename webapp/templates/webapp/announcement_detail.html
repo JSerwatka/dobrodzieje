@@ -8,15 +8,16 @@
                 <a class="btn btn-danger" href="{% url "webapp:announcement-delete" %}">Usuń Ogłoszenie</a>
             </div>
         {% endif %}
-        {% comment %} #TODO show announcemenet_state badges to all users not only creators {% endcomment %}
+        {% comment %} #TODO show announcement_state badges to all users not only creators {% endcomment %}
+        {% comment %} {% include 'webapp/partials/show_announcement_badge.html' %} {% endcomment %}
         {% if is_creator %}
-            {% if announcemenet_state == 'no team' %}
+            {% if announcement_state == 'no team' %}
                 {% include 'webapp/partials/detail_no_team.html' with organization_id=announcement.organization.user.id %}
-            {% elif announcemenet_state == 'team opened' %}
+            {% elif announcement_state == 'team opened' %}
                 {% include 'webapp/partials/detail_team_opened.html' with team=team organization_id=announcement.organization.user.id looking_for_form=looking_for_form%}
-            {% elif announcemenet_state == 'team closed' %}
+            {% elif announcement_state == 'team closed' %}
                 {% include 'webapp/partials/detail_team_closed.html' %}
-            {% elif announcemenet_state == 'team member' %}
+            {% elif announcement_state == 'team member' %}
                 {% include 'webapp/partials/detail_team_member.html' %}
             {% endif %}
         
