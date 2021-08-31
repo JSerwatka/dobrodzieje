@@ -65,12 +65,13 @@ class ForOrganizations(TemplateView):
 class AnnouncementStateContextMixin:
     def get_announcement_state(self, announcement):
         context = {}
-
         # Check if the announcement has a team
         if hasattr(announcement, 'team'):
             team = announcement.team
+            is_anonymus_user = not self.request.user.is_authenticated
+
             # Check if the current user is not a member
-            if not team.members.filter(user=self.request.user).exists():
+            if is_anonymus_user or not team.members.filter(user=self.request.user).exists():
                 if team.is_closed:
                     context['announcement_state'] = 'team closed'
                 else:
@@ -107,7 +108,7 @@ class AnnouncementList(ListView, AnnouncementStateContextMixin):
         else:
             filterd_qs = self.filter_announcements.qs
 
-        # Add announcemenet state info to the announcements
+        # Add announcement state info to the announcements
         for announcement in filterd_qs:
             announcement.extra_data = super().get_announcement_state(announcement)
 
