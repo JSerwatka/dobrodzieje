@@ -68,10 +68,10 @@ class AnnouncementStateContextMixin:
         # Check if the announcement has a team
         if hasattr(announcement, 'team'):
             team = announcement.team
-            is_anonymus_user = not self.request.user.is_authenticated
+            is_anonymous = self.request.user.is_anonymous
 
             # Check if the current user is not a member
-            if is_anonymus_user or not team.members.filter(user=self.request.user).exists():
+            if is_anonymous or not team.members.filter(user=self.request.user).exists():
                 if team.is_closed:
                     context['announcement_state'] = 'team closed'
                 else:
@@ -126,10 +126,10 @@ class AnnouncementDetails(DetailView, AnnouncementStateContextMixin):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         is_author = context['announcement'].is_author(self.request.user)
+        is_anonymous = self.request.user.is_anonymous
 
         context['is_author'] = is_author
-        #TODO context['is_creator'] -> check for (try) not logged in users
-        context['is_creator'] = self.request.user.is_creator
+        context['is_creator'] = False if is_anonymous else self.request.user.is_creator
         context.update(super().get_announcement_state(self.get_object()))
         if context['announcement_state'] == 'team opened':
             context['looking_for_form'] = TeamJoinForm(instance=context['team'])
