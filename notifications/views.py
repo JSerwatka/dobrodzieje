@@ -1,7 +1,9 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.utils.html import format_html
+from django.views.generic import View
+
 from webapp.models import (
     Announcement,
     Organization,
@@ -13,17 +15,53 @@ from webapp.models import (
 )
 
 from .models import Notification
-from django.views.generic import View
 
-# Create your views here.
-class JoinAnnouncement(View):
-    #TODO add try except for icorrect data send by user
-    #TODO use superclass to make it DRY
+
+class JoinAnnouncementMixin:
+    def get_notification_data(self, request):
+        try:
+            sender = request.user
+            recipient = User.objects.get(id=request.POST.get('organization'))
+            notification_type = Notification.NotificationType.JOIN_ANNOUNCEMENT_REQUEST
+
+            test_announcement = recipient.organization.announcement
+            if hasattr(test_announcement, 'team'):
+                messages.error(
+                    request, 
+                    message='Organizacja już ma drużynę 🤷‍♂️',
+                    extra_tags='alert-danger'
+                )
+                return {'error_with_redirect': redirect(reverse_lazy('webapp:index'))}
+        except User.DoesNotExist:
+            messages.error(
+                request, 
+                message='Organizacja nie istnieje 🤷‍♂️',
+                extra_tags='alert-danger'
+            )
+            return {'error_with_redirect': redirect(reverse_lazy('webapp:index'))}
+        except Announcement.DoesNotExist:
+            messages.error(
+                request, 
+                message='Organizacja nie posiada ogłoszenia 🤷‍♂️',
+                extra_tags='alert-danger'
+            )
+            return {'error_with_redirect': redirect(reverse_lazy('webapp:index'))}
+
+        return {'sender': sender, 'recipient': recipient, 'notification_type': notification_type}
+
+
+class JoinAnnouncement(JoinAnnouncementMixin, View):
     def post(self, request, *args, **kwargs):
-        sender = request.user
-        recipient = User.objects.get(id=request.POST.get('organization'))
-        notification_type = Notification.NotificationType.JOIN_ANNOUNCEMENT_REQUEST
-        message = 'chce pracować nad Twoją nową stroną'
+        notification_data = self.get_notification_data(request)
+
+        if notification_data.get('error_with_redirect'):
+            return notification_data['error_with_redirect']
+        
+        sender = notification_data['sender']
+        recipient = notification_data['recipient']
+        notification_type = notification_data['notification_type']
+        message = f'Użytkownik {sender} chce pracować nad Twoją nową stroną'
+
         Notification.objects.create(
             sender = sender,
             recipient = recipient,
@@ -33,14 +71,25 @@ class JoinAnnouncement(View):
         return redirect(request.META.get('HTTP_REFERER'))
 
 
-class CancelJoinAnnouncement(View):
-    #TODO add try except for icorrect data send by user
-    #TODO use superclass to make it DRY
+class CancelJoinAnnouncement(JoinAnnouncementMixin, View):
     def post(self, request, *args, **kwargs):
-        sender = request.user
-        recipient = User.objects.get(id=request.POST.get('organization'))
-        notification_type = Notification.NotificationType.JOIN_ANNOUNCEMENT_REQUEST
-        Notification.objects.get(sender=sender, recipient=recipient, notification_type=notification_type).delete()
+        notification_data = self.get_notification_data(request)
+
+        if notification_data.get('error_with_redirect'):
+            return notification_data['error_with_redirect']
+
+        sender = notification_data['sender']
+        recipient = notification_data['recipient']
+        notification_type = notification_data['notification_type']
+        try:
+            Notification.objects.get(sender=sender, recipient=recipient, notification_type=notification_type).delete()
+        except Notification.DoesNotExist:
+            messages.error(
+                    request, 
+                    message='Prośba o stworzenie drużyny nie istnieje  🤷‍♂️',
+                    extra_tags='alert-danger'
+                )
+            return {'error_with_redirect': redirect(reverse_lazy('webapp:index'))}
         return redirect(request.META.get('HTTP_REFERER'))
 
 
