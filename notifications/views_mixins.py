@@ -58,7 +58,7 @@ class JoinAnnouncementResponseMixin:
         except User.DoesNotExist:
             messages.error(
                 request, 
-                message='Użytkownik nie istnieje nie istnieje 🤷‍♂️',
+                message='Użytkownik nie istnieje 🤷‍♂️',
                 extra_tags='alert-danger'
             )
             return {'error_with_redirect': redirect(reverse_lazy('webapp:index'))}
@@ -73,6 +73,43 @@ class JoinAnnouncementResponseMixin:
         return {
             'organization_user': organization_user, 
             'creator_user': creator_user, 
+            'notification_type': notification_type,
+            'join_request_notif': join_request_notif
+        }
+
+class JoinTeamResponseMixin:
+    def get_notification_data(self, request):
+        try:
+            # Get data from the form
+            team_admin = request.user
+            applicant = User.objects.get(id=request.POST.get('creator'))
+            notification_type = Notification.NotificationType.JOIN_RESPONSE
+
+            # Check if join request from this user exists
+            join_request_notif = Notification.objects.get(
+                    sender = applicant,
+                    recipient = team_admin, 
+                    notification_type = Notification.NotificationType.JOIN_TEAM_REQUEST,
+                    extra_data__team_id = int(request.POST.get('team-id'))
+            )
+        except User.DoesNotExist:
+            messages.error(
+                request, 
+                message='Użytkownik nie istnieje 🤷‍♂️',
+                extra_tags='alert-danger'
+            )
+            return {'error_with_redirect': redirect(reverse_lazy('webapp:index'))}
+        except Notification.DoesNotExist:
+            messages.error(
+                request, 
+                message='Ten użytkownik nie wysłał prośby o dołączenie do Twojej drużyny 🤷‍♂️',
+                extra_tags='alert-danger'
+            )
+            return {'error_with_redirect': redirect(reverse_lazy('webapp:index'))}
+        
+        return {
+            'team_admin': team_admin, 
+            'applicant': applicant, 
             'notification_type': notification_type,
             'join_request_notif': join_request_notif
         }
