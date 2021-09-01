@@ -19,9 +19,9 @@ def join_request_send(context, join_request_type):
 	elif join_request_type == 'Team':
 		recipient = context['team'].get_admin()
 		notification_type = Notification.NotificationType.JOIN_TEAM_REQUEST
-		#TODO check for team id extra data
 	return Notification.objects.filter(
 				sender=request_user, 
 				recipient=recipient, 
-				notification_type=notification_type
+				notification_type=notification_type,
+				extra_data__team_id = context['team'].id
 			).exists()
