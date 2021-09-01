@@ -49,11 +49,46 @@ class JoinAnnouncementMixin:
 
         return {'sender': sender, 'recipient': recipient, 'notification_type': notification_type}
 
+class JoinAnnouncementResponseMixin:
+    def get_notification_data(self, request):
+        try:
+            # Get data from the form
+            organization_user = request.user
+            creator_user = User.objects.get(id=request.POST.get('creator'))
+            notification_type = Notification.NotificationType.JOIN_RESPONSE
+
+            # Check if join request from this user exists
+            join_request_notif = Notification.objects.get(sender=creator_user, 
+                                                          recipient=organization_user, 
+                                                          notification_type=Notification.NotificationType.JOIN_ANNOUNCEMENT_REQUEST)
+        except User.DoesNotExist:
+            messages.error(
+                request, 
+                message='Użytkownik nie istnieje nie istnieje 🤷‍♂️',
+                extra_tags='alert-danger'
+            )
+            return {'error_with_redirect': redirect(reverse_lazy('webapp:index'))}
+        except Notification.DoesNotExist:
+            messages.error(
+                request, 
+                message='Ten użytkownik nie wysłał prośby o stworzenie drużyny 🤷‍♂️',
+                extra_tags='alert-danger'
+            )
+            return {'error_with_redirect': redirect(reverse_lazy('webapp:index'))}
+        
+        return {
+            'organization_user': organization_user, 
+            'creator_user': creator_user, 
+            'notification_type': notification_type,
+            'join_request_notif': join_request_notif
+        }
+
 
 class JoinAnnouncement(JoinAnnouncementMixin, View):
     def post(self, request, *args, **kwargs):
-        notification_data = self.get_notification_data(request)
+        notification_data = super().get_notification_data(request)
 
+        # Handle errors
         if notification_data.get('error_with_redirect'):
             return notification_data['error_with_redirect']
         
@@ -73,8 +108,9 @@ class JoinAnnouncement(JoinAnnouncementMixin, View):
 
 class CancelJoinAnnouncement(JoinAnnouncementMixin, View):
     def post(self, request, *args, **kwargs):
-        notification_data = self.get_notification_data(request)
+        notification_data = super().get_notification_data(request)
 
+        # Handle errors
         if notification_data.get('error_with_redirect'):
             return notification_data['error_with_redirect']
 
@@ -93,25 +129,18 @@ class CancelJoinAnnouncement(JoinAnnouncementMixin, View):
         return redirect(request.META.get('HTTP_REFERER'))
 
 
-class JoinAnnouncementAcceptance(View):
-    #TODO add try except for icorrect data send by user
-    #TODO use superclass to make it DRY
+class JoinAnnouncementAcceptance(JoinAnnouncementResponseMixin, View):
     def post(self, request, *args, **kwargs):
-        # Get data from the form
-        organization_user = request.user
-        creator_user = User.objects.get(id=request.POST.get('creator'))
-        notification_type = Notification.NotificationType.JOIN_ANNOUNCEMENT_REQUEST
+        notification_data = super().get_notification_data(request)
 
-        # Check if join request from this user exists
-        try:
-            Notification.objects.get(sender=creator_user, recipient=organization_user, notification_type=notification_type)
-        except Notification.DoesNotExist:
-            messages.error(
-                request, 
-                message='Ten użytkownik nie wysłał prośby.',
-                extra_tags='alert-danger'
-            )
-            return redirect(reverse_lazy('webapp:index'))
+        # Handle errors
+        if notification_data.get('error_with_redirect'):
+            return notification_data['error_with_redirect']
+        
+        # Get data from the form
+        organization_user = notification_data['organization_user']
+        creator_user = notification_data['creator_user']
+        notification_type = notification_data['notification_type']
 
         # Create a new Team
         organization_announcement = Announcement.objects.get(organization__user=organization_user)
@@ -128,13 +157,14 @@ class JoinAnnouncementAcceptance(View):
         )
 
         # Notify all rejected users
-        all_join_requests = Notification.objects.filter(recipient=organization_user, notification_type=notification_type)
+        all_join_requests = Notification.objects.filter(recipient=organization_user, 
+                                                        notification_type=Notification.NotificationType.JOIN_ANNOUNCEMENT_REQUEST)
         join_requests_rejected = all_join_requests.exclude(sender=creator_user)
         for join_request in join_requests_rejected:
             Notification.objects.create(
                 sender = organization_user, 
                 recipient = join_request.sender, 
-                notification_type = Notification.NotificationType.JOIN_RESPONSE,
+                notification_type = notification_type,
                 message = 'Argh! Inne zgłoszenie zostało już przyjęte do tego ogłoszenia. Spróbuje gdzie indziej i nie trać zapału!'
             )
 
@@ -145,7 +175,7 @@ class JoinAnnouncementAcceptance(View):
         Notification.objects.create(
             sender = organization_user, 
             recipient = creator_user, 
-            notification_type = Notification.NotificationType.JOIN_RESPONSE,
+            notification_type = notification_type,
             message = f'Gratulacje twoja prośba o dołączenie do {organization_user.organization} została zaakcaptowana!',
             related_url = new_team.get_absolute_url()
         )
@@ -161,32 +191,26 @@ class JoinAnnouncementAcceptance(View):
         return redirect(organization_announcement.get_absolute_url())
 
 
-class JoinAnnouncementRejection(View):
-    #TODO add try except for icorrect data send by user
-    #TODO use superclass to make it DRY
+class JoinAnnouncementRejection(JoinAnnouncementResponseMixin, View):
     def post(self, request, *args, **kwargs):
-        # Get data from the form
-        organization_user = request.user
-        creator_user = User.objects.get(id=request.POST.get('creator'))
-        notification_type = Notification.NotificationType.JOIN_ANNOUNCEMENT_REQUEST
+        notification_data = super().get_notification_data(request)
 
-        # Check if join request from this user exists
-        try:
-            join_request_notif = Notification.objects.get(sender=creator_user, recipient=organization_user, notification_type=notification_type)
-        except Notification.DoesNotExist:
-            messages.error(
-                request, 
-                message='Ten użytkownik nie wysłał prośby',
-                extra_tags='alert-danger'
-            )
-            return redirect(reverse_lazy('webapp:index'))
+        # Handle errors
+        if notification_data.get('error_with_redirect'):
+            return notification_data['error_with_redirect']
+
+        organization_user = notification_data['organization_user']
+        creator_user = notification_data['creator_user']
+        notification_type = notification_data['notification_type']
+        join_request_notif = notification_data['join_request_notif']
+        message = f'😢 Twoja prośba o dołączenie do {organization_user.organization} została odrzucona. Skontaktuj się z organizacją jeśli chcesz wyjaśnić sytuację'
 
         # Create notification that the user's request got rejected
         Notification.objects.create(
             sender = organization_user, 
             recipient = creator_user, 
-            notification_type = Notification.NotificationType.JOIN_RESPONSE,
-            message = f'😢 Twoja prośba o dołączenie do {organization_user.organization} została odrzucona. Skontaktuj się z organizacją jeśli chcesz wyjaśnić sytuację',
+            notification_type = notification_type,
+            message = message,
         )
 
         # Delete this join request notification
