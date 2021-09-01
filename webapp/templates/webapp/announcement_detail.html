@@ -3,9 +3,13 @@
 {% block content %}
     <div class="container">
         {% if is_author %}
+            {% include 'webapp/partials/announcement_delete_modal.html' %}
             <div>
                 <a class="btn btn-secondary" href="{% url "webapp:announcement-edit" %}">Edytuj Ogłoszenie</a>
-                <a class="btn btn-danger" href="{% url "webapp:announcement-delete" %}">Usuń Ogłoszenie</a>
+                <!-- Button trigger delete announcement modal -->
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAnnouncementModal">
+                    Usuń drużynę
+                </button>
             </div>
         {% endif %}
         {% include 'webapp/partials/show_announcement_badge.html' with announcement_state=announcement_state team=team %}

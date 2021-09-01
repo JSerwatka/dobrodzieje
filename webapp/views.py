@@ -182,9 +182,9 @@ class AnnouncementUpdate(UserIsOrganizationTestMixin, UpdateView):
 
 
 class AnnouncementDelete(UserIsOrganizationTestMixin, DeleteView):
-    template_name = 'webapp/announcement_delete.html'
+    # template_name = 'webapp/announcement_delete.html'
     success_url = reverse_lazy('webapp:index')
-    
+
     def get_object(self):
         return Announcement.objects.for_user_or_400(self.request.user)
 
@@ -193,7 +193,7 @@ class AnnouncementDelete(UserIsOrganizationTestMixin, DeleteView):
 class MyTeams(UserIsCreatorTestMixin, ListView):
     template_name = 'webapp/teams_list.html'
     context_object_name = 'teams'
-    #TODO paginate_by = 10 
+    paginate_by = 5 
   
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
