@@ -23,7 +23,7 @@
                         <h5 class="modal-title" id="teamSettingsModalLabel">Ustawienia</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                        <form action="{% url 'chat:update-team-settings' team_id=team_id %}" method="POST">
+                        <form action="{% url 'chat:update-team-settings' team_id=team.id %}" method="POST">
                             <div class="modal-body">
                                     {% csrf_token %}
                                     <div>
@@ -67,7 +67,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Anuluj</button>
-                    <form action="{% url 'chat:delete-team' team_id=team_id %}" method="POST">
+                    <form action="{% url 'chat:delete-team' team_id=team.id %}" method="POST">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger">Usuń</button>
                     </form>
@@ -90,7 +90,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Anuluj</button>
-                    <form action="{% url 'chat:delete-team-member' team_id=team_id %}" method="POST">
+                    <form action="{% url 'chat:delete-team-member' team_id=team.id %}" method="POST">
                         {% csrf_token %}
                         <input type="hidden" name="member-id" class="js-delete-member-input">
                         <button type="submit" class="btn btn-danger">Usuń</button>

@@ -88,7 +88,6 @@ class TeamChat(UserIsTeamMemberTestMixin, TemplateView):
         organization = team.announcement.organization
 
         context.update({
-            'team_id': team.id,
             'team': team,
             'members': members,
             'organization': organization,
