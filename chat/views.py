@@ -1,65 +1,20 @@
-from django.http.response import JsonResponse
 from django.urls.base import reverse_lazy
-from django.shortcuts import redirect, render
-from django.contrib import messages
-from django.http import Http404
-from django.views.generic.base import TemplateView
-from django.views.generic.edit import DeleteView
-from webapp.models import Team, Creator, TeamMember
-from .models import Message
-from .serializers import serialize_message
-
+from django.shortcuts import redirect
+from django.http.response import JsonResponse
 from django.views.generic import (
     ListView,
-    View,
+    TemplateView,
     UpdateView,
+    DeleteView
 )
 
+from webapp.models import Team, TeamMember
+
+from .models import Message
+from .serializers import serialize_message
 from .forms import TeamForm, JoinTeamAdminForm, JoinTeamForm
 from .authorization import UserIsTeamMemberTestMixin, UserIsTeamMemberAdminTestMixin
 
-
-#TODO accept only joined team members
-# def team_chat(request, team_id):
-#     # Check if the team exists and the current user is authorized to view its chat
-#     #TODO make sure it works for unauthenticated users
-#     #TODO change to  auhtontication test method
-#     try:
-#         team = Team.objects.get(id=team_id)
-#         team.members.get(user=request.user)
-#     except Team.DoesNotExist:
-#         raise Http404('Drużyna nie istnieje')
-#     except Creator.DoesNotExist:
-#         messages.error(
-#             request, 
-#             message='Nie masz uprawnień do tego czatu. Aby z niego skorzystać, poproś o dołączenie.',
-#             extra_tags='alert-danger'
-#         )
-#         return redirect(reverse_lazy('webapp:index'))
-    
-#     members = team.teammember_set.select_related('creator__user')
-#     current_member = members.get(creator__user=request.user)
-
-#     # New members have to enter their nick
-#     if not current_member.joined:
-#         return redirect(
-#                 reverse_lazy('chat:join-chat', 
-#                 kwargs={
-#                     'team_id': team_id,
-#                     'team_member_id': current_member.id
-#                 }))
-
-#     current_member_admin = current_member.is_admin
-#     organization = team.announcement.organization
-
-#     return render(request, 'chat/chatroom.html', {
-#         'team_id': team_id,
-#         'team': team,
-#         'members': members,
-#         'organization': organization,
-#         'user_is_admin': current_member_admin,
-#         'form': TeamForm(instance=team)
-#     })
 
 class TeamChat(UserIsTeamMemberTestMixin, TemplateView):
     template_name = 'chat/chatroom.html'
