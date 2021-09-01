@@ -15,6 +15,7 @@ from django.views.generic import (
 )
 
 from .forms import TeamForm, JoinTeamAdminForm, JoinTeamForm
+from .authorization import UserIsTeamMemberTestMixin, UserIsTeamMemberAdminTestMixin
 
 
 #TODO accept only joined team members
@@ -60,8 +61,7 @@ def team_chat(request, team_id):
     })
 
 
-#TODO add auhtontication test method + restrict to joined users
-class JoinChat(UpdateView):
+class JoinChat(UserIsTeamMemberTestMixin, UpdateView):
     template_name = 'chat/join_chat.html'
 
     def get_object(self):
@@ -90,8 +90,7 @@ class JoinChat(UpdateView):
         return reverse_lazy('chat:team-chat', kwargs={'team_id': team_id})
 
 
-#TODO add auhtontication test method
-class LoadMessages(ListView):
+class LoadMessages(UserIsTeamMemberTestMixin, ListView):
     paginate_by = 25
     
     def get_queryset(self):
@@ -111,8 +110,7 @@ class LoadMessages(ListView):
         return JsonResponse(response, **response_kwargs)
 
 
-#TODO set only for admin authenthication + admin
-class UpdateTeamSettings(UpdateView):
+class UpdateTeamSettings(UserIsTeamMemberAdminTestMixin, UpdateView):
     model = Team
     form_class = TeamForm
     http_method_names = ['post']
@@ -127,8 +125,7 @@ class UpdateTeamSettings(UpdateView):
         return reverse_lazy('chat:team-chat', kwargs={'team_id': team_id})
 
 
-#TODO set only for admin authenthication + admin
-class DeleteTeam(DeleteView):
+class DeleteTeam(UserIsTeamMemberAdminTestMixin, DeleteView):
     def get_object(self):
         team_id = self.kwargs.get('team_id')
         return Team.objects.get(id=team_id)
@@ -137,8 +134,7 @@ class DeleteTeam(DeleteView):
         return reverse_lazy('webapp:index')
 
 
-#TODO set only for admin authenthication + admin
-class RemoveUserFromTeam(DeleteView):
+class RemoveUserFromTeam(UserIsTeamMemberAdminTestMixin, DeleteView):
     def get_object(self):
         member_id = self.request.POST.get('member-id')
         return TeamMember.objects.get(id=member_id)
