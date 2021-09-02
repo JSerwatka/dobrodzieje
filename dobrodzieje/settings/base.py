@@ -129,7 +129,7 @@ CKEDITOR_CONFIGS = {
     'default': {
         'toolbar': 'Custom',
         'toolbar_Custom': [
-            ['Bold', 'Italic', 'Underline', 'FontSize', 'TextColor', 'BGColor'],
+            ['Format', 'FontSize', 'Bold', 'Italic', 'Underline', '-', 'TextColor', 'BGColor'],
             ['BulletedList', 'NumberedList', '-', 'HorizontalRule'],
             ['Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
             ['Link', 'Unlink', '-', 'Image', '-', 'Maximize'],
@@ -141,7 +141,6 @@ CKEDITOR_CONFIGS = {
         ]),
     }
 }
-
 
 # Chat
 ASGI_APPLICATION = 'dobrodzieje.routing.application'
