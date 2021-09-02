@@ -76,7 +76,6 @@
             </div>
         </div>        
         
-        
         <!-- Delete Team Member Modal -->
         <div class="modal fade" id="deleteTeamMemberModal" tabindex="-1" aria-labelledby="deleteTeamMemberModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -117,14 +116,18 @@
                 <div class="h4">Uczestnicy</div>
                 <ul>
                     {% for member in members %}
-                        {% comment %} #TODO dont show not joined users {% endcomment %}
-                        <li {% if member.is_admin %}style='color:red'{% endif %}>{{ member.nick }} - {{ member.get_role_display }} 
-                            {% if not member.is_admin and current_member.is_admin %}
-                                <!-- Button trigger delete team member modal -->        
-                                <button type="button" class="btn btn-danger js-delete-member" data-bs-toggle="modal" data-bs-target="#deleteTeamMemberModal" data-member-id="{{ member.id }}">
-                                    X
-                                </button>
-                            {% endif %}</li> 
+                        {% comment %} Don't show not joined users {% endcomment %}
+                        {% if member.joined %}
+                            <li {% if member.is_admin %}style='color:red'{% endif %}>
+                                {{ member.nick }} - {{ member.get_role_display }} 
+                                {% if not member.is_admin and current_member.is_admin %}
+                                    <!-- Button trigger delete team member modal -->        
+                                    <button type="button" class="btn btn-danger js-delete-member" data-bs-toggle="modal" data-bs-target="#deleteTeamMemberModal" data-member-id="{{ member.id }}">
+                                        X
+                                    </button>
+                                {% endif %}
+                        {% endif %}
+                        </li> 
                     {% endfor %}
                 </ul>
             </div>
