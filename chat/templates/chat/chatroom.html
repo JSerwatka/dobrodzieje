@@ -161,10 +161,14 @@
 
         function appendNewMsg(data, loadedMsgs=false) {
             const messageList = document.querySelector('#message-list');
-            //#TODO set position as li class (current user or other users - right, left)
-            const position = (data.sender === currentUser) ? 'right' : 'left'
+
+            // Gather info about msg sender
+            const position = (data.sender === currentUser) ? 'msg-right' : 'msg-left'
             const nick = creatorNickMap[data.sender]
+
+            // Create a new msg element
             const newMsg = document.createElement("li");
+            newMsg.classList.add('chat-msg', position);
             newMsg.innerHTML = `${nick}: ${data.content}`;
 
             // When loading msgs from db add to the start of the chat
