@@ -1,67 +1,63 @@
-from django.http.response import JsonResponse
-from django.urls.base import reverse_lazy
-from django.shortcuts import redirect, render
-from django.contrib import messages
-from django.http import Http404
-from django.views.generic.edit import DeleteView
-from webapp.models import Team, Creator, TeamMember
-from .models import Message
-from .serializers import serialize_message
+import json
 
+from django.urls.base import reverse_lazy
+from django.shortcuts import redirect
+from django.http.response import JsonResponse
 from django.views.generic import (
     ListView,
-    View,
+    TemplateView,
     UpdateView,
+    DeleteView
 )
 
+from webapp.models import Team, TeamMember
+
+from .models import Message
+from .serializers import serialize_message
 from .forms import TeamForm, JoinTeamAdminForm, JoinTeamForm
+from .authorization import UserIsTeamMemberTestMixin, UserIsTeamMemberAdminTestMixin
 
 
-#TODO accept only joined team members
-def team_chat(request, team_id):
-    # Check if the team exists and the current user is authorized to view its chat
-    #TODO make sure it works for unauthenticated users
-    #TODO change to  auhtontication test method
-    try:
-        team = Team.objects.get(id=team_id)
-        team.members.get(user=request.user)
-    except Team.DoesNotExist:
-        raise Http404('Drużyna nie istnieje')
-    except Creator.DoesNotExist:
-        messages.error(
-            request, 
-            message='Nie masz uprawnień do tego czatu. Aby z niego skorzystać, poproś o dołączenie.',
-            extra_tags='alert-danger'
-        )
-        return redirect(reverse_lazy('webapp:index'))
-    
-    members = team.teammember_set.select_related('creator__user')
-    current_member = members.get(creator__user=request.user)
+class TeamChat(UserIsTeamMemberTestMixin, TemplateView):
+    template_name = 'chat/chatroom.html'
 
-    # New members have to enter their nick
-    if not current_member.joined:
-        return redirect(
-                reverse_lazy('chat:join-chat', 
-                kwargs={
-                    'team_id': team_id,
-                    'team_member_id': current_member.id
-                }))
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        team = context['team']
+        current_member = context['current_member']
 
-    current_member_admin = current_member.is_admin
-    organization = team.announcement.organization
+        # New members have to enter their nick first
+        if not current_member.joined:
+            return redirect(
+                    reverse_lazy('chat:join-chat', 
+                    kwargs={
+                        'team_id': team.id,
+                        'team_member_id': current_member.id
+                    }))
+        return self.render_to_response(context)
 
-    return render(request, 'chat/chatroom.html', {
-        'team_id': team_id,
-        'team': team,
-        'members': members,
-        'organization': organization,
-        'user_is_admin': current_member_admin,
-        'form': TeamForm(instance=team)
-    })
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        team = Team.objects.get(id=kwargs['team_id'])
+        members = team.teammember_set.select_related('creator__user')
+        current_member = members.get(creator__user=self.request.user)
+        creator_nick_map = {member.creator.user.email: member.nick for member in members}
+        organization = team.announcement.organization
+
+        context.update({
+            'team': team,
+            'members': members,
+            'organization': organization,
+            'current_member': current_member,
+            'creator_nick_map': json.dumps(creator_nick_map),
+            'form': TeamForm(instance=team)
+        })
+
+        return context
 
 
-#TODO add auhtontication test method + restrict to joined users
-class JoinChat(UpdateView):
+class JoinChat(UserIsTeamMemberTestMixin, UpdateView):
     template_name = 'chat/join_chat.html'
 
     def get_object(self):
@@ -90,8 +86,7 @@ class JoinChat(UpdateView):
         return reverse_lazy('chat:team-chat', kwargs={'team_id': team_id})
 
 
-#TODO add auhtontication test method
-class LoadMessages(ListView):
+class LoadMessages(UserIsTeamMemberTestMixin, ListView):
     paginate_by = 25
     
     def get_queryset(self):
@@ -111,8 +106,7 @@ class LoadMessages(ListView):
         return JsonResponse(response, **response_kwargs)
 
 
-#TODO set only for admin authenthication + admin
-class UpdateTeamSettings(UpdateView):
+class UpdateTeamSettings(UserIsTeamMemberAdminTestMixin, UpdateView):
     model = Team
     form_class = TeamForm
     http_method_names = ['post']
@@ -127,8 +121,7 @@ class UpdateTeamSettings(UpdateView):
         return reverse_lazy('chat:team-chat', kwargs={'team_id': team_id})
 
 
-#TODO set only for admin authenthication + admin
-class DeleteTeam(DeleteView):
+class DeleteTeam(UserIsTeamMemberAdminTestMixin, DeleteView):
     def get_object(self):
         team_id = self.kwargs.get('team_id')
         return Team.objects.get(id=team_id)
@@ -137,8 +130,7 @@ class DeleteTeam(DeleteView):
         return reverse_lazy('webapp:index')
 
 
-#TODO set only for admin authenthication + admin
-class RemoveUserFromTeam(DeleteView):
+class RemoveUserFromTeam(UserIsTeamMemberAdminTestMixin, DeleteView):
     def get_object(self):
         member_id = self.request.POST.get('member-id')
         return TeamMember.objects.get(id=member_id)

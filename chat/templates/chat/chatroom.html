@@ -1,6 +1,5 @@
 {% extends 'layout.html' %}
 {% load static %}
-{% load widget_tweaks %}
 
 {% block load_css %}
      <link href="{% static 'chat/main.css' %}" rel="stylesheet">
@@ -8,97 +7,8 @@
 {% endblock load_css %}
 
 {% block content %}
-    {% if user_is_admin %}
-        <!-- Button trigger settings modal -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#teamSettingsModal">
-            Ustawienia
-        </button>
-
-        <!-- Settings Modal -->
-        {% comment %} #TODO FORCE: opened group has to have looking_for filled - otherwise causes error in limited_choices var in TeamJoinForm form {% endcomment %}
-        <div class="modal fade" id="teamSettingsModal" tabindex="-1" aria-labelledby="teamSettingsModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="teamSettingsModalLabel">Ustawienia</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                        <form action="{% url 'chat:update-team-settings' team_id=team_id %}" method="POST">
-                            <div class="modal-body">
-                                    {% csrf_token %}
-                                    <div>
-                                        {{ form.our_stack.label_tag }}
-                                        {% render_field form.our_stack|attr:"data-multi-select-plugin"%}
-                                    </div>
-                                    <div>
-                                        {{ form.looking_for.label_tag }}
-                                        {% render_field form.looking_for|attr:"data-multi-select-plugin"%}
-                                    </div>
-                                    <div class="form-check form-switch">
-                                        {{ form.is_closed.label_tag }}
-                                        {% render_field form.is_closed class="form-check-input" %}
-                                    </div>
-                                
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Anuluj</button>
-                                <button type="submit" class="btn btn-dark">Zapisz</button>
-                            </div>
-                        </form>
-                    </div>
-            </div>
-        </div>
-
-        <!-- Button trigger delete team modal -->
-        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteTeamModal">
-            Usuń drużynę
-        </button>
-
-        <!-- Delete Team Modal -->
-        <div class="modal fade" id="deleteTeamModal" tabindex="-1" aria-labelledby="deleteTeamModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteTeamModalLabel">Jesteś pewien?</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Ta akcja jest nieodwracalna i będzie skutkowała usunięciem całej drużyny, jej wiadomości, jak i odłączenia jej od ogłoszenia. 
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Anuluj</button>
-                    <form action="{% url 'chat:delete-team' team_id=team_id %}" method="POST">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger">Usuń</button>
-                    </form>
-                </div>
-                </div>
-            </div>
-        </div>        
-        
-        
-        <!-- Delete Team Member Modal -->
-        <div class="modal fade" id="deleteTeamMemberModal" tabindex="-1" aria-labelledby="deleteTeamMemberModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteTeamMemberModalLabel">Jesteś pewien?</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Ta akcja jest nieodwracalna i będzie skutkowała usunięcie użytkownika z drużyny. 
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Anuluj</button>
-                    <form action="{% url 'chat:delete-team-member' team_id=team_id %}" method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" name="member-id" class="js-delete-member-input">
-                        <button type="submit" class="btn btn-danger">Usuń</button>
-                    </form>
-                </div>
-                </div>
-            </div>
-        </div>
+    {% if current_member.is_admin %}
+        {% include 'chat/partials/chatroom_modals.html' with team=team form=form%}
     {% endif %}
 
 
@@ -117,14 +27,18 @@
                 <div class="h4">Uczestnicy</div>
                 <ul>
                     {% for member in members %}
-                        {% comment %} #TODO dont show not joined users {% endcomment %}
-                        <li {% if member.is_admin %}style='color:red'{% endif %}>{{ member.nick }} - {{ member.get_role_display }} 
-                            {% if not member.is_admin and user_is_admin %}
-                                <!-- Button trigger delete team member modal -->        
-                                <button type="button" class="btn btn-danger js-delete-member" data-bs-toggle="modal" data-bs-target="#deleteTeamMemberModal" data-member-id="{{ member.id }}">
-                                    X
-                                </button>
-                            {% endif %}</li> 
+                        {% comment %} Don't show not joined users {% endcomment %}
+                        {% if member.joined %}
+                            <li {% if member.is_admin %}style='color:red'{% endif %}>
+                                {{ member.nick }} - {{ member.get_role_display }} 
+                                {% if not member.is_admin and current_member.is_admin %}
+                                    <!-- Button trigger delete team member modal -->        
+                                    <button type="button" class="btn btn-danger js-delete-member" data-bs-toggle="modal" data-bs-target="#deleteTeamMemberModal" data-member-id="{{ member.id }}">
+                                        X
+                                    </button>
+                                {% endif %}
+                        {% endif %}
+                        </li> 
                     {% endfor %}
                 </ul>
             </div>
@@ -151,7 +65,8 @@
         //{% comment %} #TODO disable multiselects in settings if group closed - add tooltip or smth {% endcomment %}
     </script>
     <script>
-        const currentUser  = '{{ request.user.email }}';
+        const currentUser  = '{{ request.user }}';
+        const creatorNickMap = JSON.parse('{{creator_nick_map|safe}}');
         const chatWindow = document.querySelector('.chat-window-js');
         const messageInput = document.querySelector('.msg-field-js');
         const submitButton = document.querySelector('#submit');
@@ -160,14 +75,18 @@
 
         function appendNewMsg(data, loadedMsgs=false) {
             const messageList = document.querySelector('#message-list');
-            //#TODO set position ass li class (current user or other users - right, left)
-            //#TODO use nick instead of email
-            const position = (data.sender === currentUser) ? 'right' : 'left'
+
+            // Gather info about msg sender
+            const position = (data.sender === currentUser) ? 'msg-right' : 'msg-left'
+            const nick = creatorNickMap[data.sender]
+
+            // Create a new msg element
             const newMsg = document.createElement("li");
-            newMsg.innerHTML = `<li>${data.sender}: ${data.content}</li>`;
+            newMsg.classList.add('chat-msg', position);
+            newMsg.innerHTML = `${nick}: ${data.content}`;
 
             // When loading msgs from db add to the start of the chat
-            // otherwise (websocket msgs) ass to the end of the chat
+            // otherwise (websocket msgs) add to the end of the chat
             if (loadedMsgs) {
                 messageList.prepend(newMsg)
             }

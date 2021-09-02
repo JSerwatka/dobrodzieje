@@ -1,0 +1,21 @@
+<!-- Delete Team Modal -->
+<div class="modal fade" id="deleteAnnouncementModal" tabindex="-1" aria-labelledby="deleteAnnouncementModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="deleteAnnouncementModalLabel">Jesteś pewien?</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            Ta akcja jest nieodwracalna i będzie skutkowała usunięciem ogłoszenia jak i powiązanej z nią drużyny!
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Anuluj</button>
+            <form action="{% url 'webapp:announcement-delete' %}" method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Usuń</button>
+            </form>
+        </div>
+        </div>
+    </div>
+</div>

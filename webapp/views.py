@@ -1,13 +1,8 @@
-# from django.views.generic.base import RedirectView
-# from django.views.generic.detail import DetailView
-# from django.views.generic.edit import CreateView, DeleteView
-# from django.views.generic.base import TemplateView
-from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, logout, login
 from django.contrib import messages
-
+from django.contrib.auth.views import LoginView
 from django.views.generic import (
     TemplateView,
     RedirectView,
@@ -17,14 +12,17 @@ from django.views.generic import (
     DeleteView,
     ListView
 )
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+from .authorization import (
+    UserIsOrganizationTestMixin,
+    UserIsCreatorTestMixin
+)
 from .models import (
     Announcement, 
-    Organization, 
     User,
-    Creator,
     Team
 )
-
 from .forms import (
     OrganizationRegisterForm,
     CreatorRegisterForm,
@@ -33,10 +31,7 @@ from .forms import (
     CreatorEditForm,
     TeamJoinForm
 )
-
-from .filters import (
-    AnnouncementFilter,
-)
+from .filters import AnnouncementFilter
 
 
 # ==== Basic ===== 
@@ -70,12 +65,13 @@ class ForOrganizations(TemplateView):
 class AnnouncementStateContextMixin:
     def get_announcement_state(self, announcement):
         context = {}
-
         # Check if the announcement has a team
         if hasattr(announcement, 'team'):
             team = announcement.team
+            is_anonymous = self.request.user.is_anonymous
+
             # Check if the current user is not a member
-            if not team.members.filter(user=self.request.user).exists():
+            if is_anonymous or not team.members.filter(user=self.request.user).exists():
                 if team.is_closed:
                     context['announcement_state'] = 'team closed'
                 else:
@@ -112,7 +108,7 @@ class AnnouncementList(ListView, AnnouncementStateContextMixin):
         else:
             filterd_qs = self.filter_announcements.qs
 
-        # Add announcemenet state info to the announcements
+        # Add announcement state info to the announcements
         for announcement in filterd_qs:
             announcement.extra_data = super().get_announcement_state(announcement)
 
@@ -130,10 +126,10 @@ class AnnouncementDetails(DetailView, AnnouncementStateContextMixin):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         is_author = context['announcement'].is_author(self.request.user)
+        is_anonymous = self.request.user.is_anonymous
 
         context['is_author'] = is_author
-        #TODO context['is_creator'] -> check for (try) not logged in users
-        context['is_creator'] = self.request.user.is_creator
+        context['is_creator'] = False if is_anonymous else self.request.user.is_creator
         context.update(super().get_announcement_state(self.get_object()))
         if context['announcement_state'] == 'team opened':
             context['looking_for_form'] = TeamJoinForm(instance=context['team'])
@@ -158,7 +154,7 @@ class MyAnnouncement(TemplateView):
         return context
 
 
-class AnnouncementCreate(CreateView):
+class AnnouncementCreate(UserIsOrganizationTestMixin, CreateView):
     template_name = 'webapp/announcement_edit.html'
     form_class = AnnouncementForm
 
@@ -172,7 +168,7 @@ class AnnouncementCreate(CreateView):
         return context
 
 
-class AnnouncementUpdate(UpdateView):
+class AnnouncementUpdate(UserIsOrganizationTestMixin, UpdateView):
     template_name = 'webapp/announcement_edit.html'
     form_class = AnnouncementForm
 
@@ -185,19 +181,19 @@ class AnnouncementUpdate(UpdateView):
         return context
 
 
-class AnnouncementDelete(DeleteView):
-    template_name = 'webapp/announcement_delete.html'
+class AnnouncementDelete(UserIsOrganizationTestMixin, DeleteView):
+    # template_name = 'webapp/announcement_delete.html'
     success_url = reverse_lazy('webapp:index')
-    
+
     def get_object(self):
         return Announcement.objects.for_user_or_400(self.request.user)
 
 
 # ==== Teams ===== 
-class MyTeams(ListView):
+class MyTeams(UserIsCreatorTestMixin, ListView):
     template_name = 'webapp/teams_list.html'
     context_object_name = 'teams'
-    #TODO paginate_by = 10 
+    paginate_by = 5 
   
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -208,7 +204,7 @@ class MyTeams(ListView):
         return Team.objects.filter(members__user=self.request.user).select_related('announcement').prefetch_related('teammember_set')
 
 # ==== Edit Profile ===== 
-class EditProfile(UpdateView):
+class EditProfile(LoginRequiredMixin, UpdateView):
     template_name = 'webapp/edit_profile.html'
 
     def get_form_class(self):
@@ -238,7 +234,7 @@ class Login(LoginView):
 
 
 # Forces all register views to activate "Zarejestruj się" navbar item
-class RegisterContextMixin():
+class RegisterContextMixin:
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['navbar_active'] = 'register'

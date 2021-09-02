@@ -1,9 +1,11 @@
 import json
+
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
-from .models import Message
 from webapp.models import Team
+
+from .models import Message
 
 #TODO add recencting https://github.com/joewalnes/reconnecting-websocket
 
