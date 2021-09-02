@@ -1,3 +1,5 @@
+import json
+
 from django.urls.base import reverse_lazy
 from django.shortcuts import redirect
 from django.http.response import JsonResponse
@@ -40,6 +42,7 @@ class TeamChat(UserIsTeamMemberTestMixin, TemplateView):
         team = Team.objects.get(id=kwargs['team_id'])
         members = team.teammember_set.select_related('creator__user')
         current_member = members.get(creator__user=self.request.user)
+        creator_nick_map = {member.creator.user.email: member.nick for member in members}
         organization = team.announcement.organization
 
         context.update({
@@ -47,6 +50,7 @@ class TeamChat(UserIsTeamMemberTestMixin, TemplateView):
             'members': members,
             'organization': organization,
             'current_member': current_member,
+            'creator_nick_map': json.dumps(creator_nick_map),
             'form': TeamForm(instance=team)
         })
 

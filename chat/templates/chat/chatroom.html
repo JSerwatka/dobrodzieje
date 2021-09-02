@@ -151,7 +151,8 @@
         //{% comment %} #TODO disable multiselects in settings if group closed - add tooltip or smth {% endcomment %}
     </script>
     <script>
-        const currentUser  = '{{ request.user.email }}';
+        const currentUser  = '{{ request.user }}';
+        const creatorNickMap = JSON.parse('{{creator_nick_map|safe}}');
         const chatWindow = document.querySelector('.chat-window-js');
         const messageInput = document.querySelector('.msg-field-js');
         const submitButton = document.querySelector('#submit');
@@ -160,14 +161,14 @@
 
         function appendNewMsg(data, loadedMsgs=false) {
             const messageList = document.querySelector('#message-list');
-            //#TODO set position ass li class (current user or other users - right, left)
-            //#TODO use nick instead of email
+            //#TODO set position as li class (current user or other users - right, left)
             const position = (data.sender === currentUser) ? 'right' : 'left'
+            const nick = creatorNickMap[data.sender]
             const newMsg = document.createElement("li");
-            newMsg.innerHTML = `<li>${data.sender}: ${data.content}</li>`;
+            newMsg.innerHTML = `${nick}: ${data.content}`;
 
             // When loading msgs from db add to the start of the chat
-            // otherwise (websocket msgs) ass to the end of the chat
+            // otherwise (websocket msgs) add to the end of the chat
             if (loadedMsgs) {
                 messageList.prepend(newMsg)
             }

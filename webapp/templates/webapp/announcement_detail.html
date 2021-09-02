@@ -19,7 +19,6 @@
             {% elif announcement_state == 'team opened' %}
                 {% include 'webapp/partials/form_team_opened.html' with team=team organization_id=announcement.organization.user.id looking_for_form=looking_for_form%}
             {% endif %}
-        
         {% endif %}       
 
         {{announcement.organization}}
