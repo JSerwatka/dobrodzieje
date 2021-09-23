@@ -139,6 +139,9 @@ CKEDITOR_CONFIGS = {
             'autolink',
             'autogrow',
         ]),
+        # TODO when deploying one of below skins: (how: https://stackoverflow.com/questions/33188825/django-ckeditor-styling, https://stackoverflow.com/questions/57324685/is-there-a-way-to-add-new-skin-in-django-ckeditor)
+        # 'skin': 'n1theme' https://ckeditor.com/cke4/addon/n1theme
+        # 'skin': 'office2013' https://ckeditor.com/cke4/addon/office2013
     }
 }
 

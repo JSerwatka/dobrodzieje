@@ -5,10 +5,10 @@
         {% if is_author %}
             {% include 'webapp/partials/announcement_delete_modal.html' %}
             <div>
-                <a class="btn btn-secondary" href="{% url "webapp:announcement-edit" %}">Edytuj Ogłoszenie</a>
+                <a class="btn btn-secondary" href="{% url "webapp:announcement-edit" %}">Edytuj ogłoszenie</a>
                 <!-- Button trigger delete announcement modal -->
                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAnnouncementModal">
-                    Usuń drużynę
+                    Usuń ogłoszenie
                 </button>
             </div>
         {% endif %}
