@@ -10,6 +10,13 @@ from .managers import (
     CityManager
 )
 
+import bleach
+
+
+# Set ckeditor sanitizing rules
+bleach.sanitizer.ALLOWED_TAGS += ['p', 'span', 'u', 'ul', 'ol', 'hr', 'img' ,'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6','pre', 'address', 'strong', 'br']
+bleach.sanitizer.ALLOWED_ATTRIBUTES.update({'*': ['style'], 'img': ['alt', 'src']})
+bleach.sanitizer.ALLOWED_STYLES += ['color', 'font-size', 'text-align', 'list-style-type', 'background-color', 'height', 'width', 'margin-left', 'float', 'margin', 'border-width', 'border-style']
 
 # ===== Choices =====
 # info https://docs.djangoproject.com/en/3.2/ref/models/fields/#enumeration-types
@@ -119,6 +126,10 @@ class Announcement(models.Model):
 
     def is_author(self, user):
         return self.organization.user == user
+
+    def save(self, *args, **kwargs):
+        self.content = bleach.clean(self.content)
+        super().save(*args, **kwargs)
 
 
 class Team(models.Model):

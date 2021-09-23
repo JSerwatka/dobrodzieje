@@ -134,6 +134,8 @@ CKEDITOR_CONFIGS = {
             ['Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
             ['Link', 'Unlink', '-', 'Image', '-', 'Maximize'],
         ],
+        # 'uiColor': '#66AB16',
+        'removeDialogTabs': 'image:advanced;image:Link;link:advanced;link:target',
         'tabSpaces': 4,
         'extraPlugins': ','.join([
             'autolink',
